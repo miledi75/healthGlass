@@ -183,9 +183,10 @@ public class ExtraParametersActivity extends AppCompatActivity
         protected void onRecognition(String result)
         {
             this.command = result;
-            if(this.command.equals("select"))
+            if(this.command.equals("go back"))
             {
-
+                //Go back to PatientInfoActivity
+                finish();
             }
 
         }
@@ -228,7 +229,8 @@ public class ExtraParametersActivity extends AppCompatActivity
         @Override
         protected void onFar()
         {
-
+            //go back to patientInfoActivity
+            finish();
         }
 
         @Override
