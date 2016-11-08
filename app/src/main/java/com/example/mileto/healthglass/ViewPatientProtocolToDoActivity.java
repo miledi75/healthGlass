@@ -70,7 +70,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             {
                 ProtocolItemsAdapter pI = (ProtocolItemsAdapter) parent.getAdapter();
                 Toast toast = new Toast(getApplicationContext());
-                toast.makeText(getApplicationContext(),Integer.toString(position),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),Integer.toString(position),Toast.LENGTH_SHORT).show();
 
 
             }

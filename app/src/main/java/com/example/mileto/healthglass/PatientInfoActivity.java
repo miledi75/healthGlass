@@ -104,7 +104,7 @@ public class PatientInfoActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                String selectedFromList = (String) protocolList.getItemAtPosition(position).toString();
+                String selectedFromList = protocolList.getItemAtPosition(position).toString();
                 String strPosition = Integer.toString(position);
                 if (selectedFromList.matches("(?i).*Completed"))
                 {//LOAD COMPLETED PROTOCOL ACITIVITY
