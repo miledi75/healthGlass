@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">HealthGlass</string>
+    <string name="Scan">Scan Patient</string>
+    <string name="Ready">Ready</string>
+    <string name="Info">Info</string>
+    <string name="addProtocol">New</string>
+
+
+    <string name="title_activity_add_protocol">AddProtocolActivity</string>
+    <string name="addPicture">Add picture</string>
+    <string name="pictures">Images</string>
+    <string name="viewComments">Comments</string>
+    <string name="patientNameLabel">Name:</string>
+    <string name="extraParameters">Parameters</string>
+    <string name="title_activity_view_protocol_completed">ViewProtocolCompleted</string>
+    <string name="playRecording">Play recording</string>
+    <string name="deleteImage">Delete</string>
+    <string name="rotateImage">Rotate</string>
+    <string name="stopRecording">Stop</string>
+    <string name="addRecording">Record</string>
+    <string name="textviewCounterRecorder">count</string>
+    <string name="listenButton">Listen</string>
+    <string name="addComment">add</string>
+    <string name="listenComment">Listen</string>
+    <string name="deleteComment">Delete</string>
+    <string name="back">Back</string>
+</resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_listen_comment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp"
+    android:columnCount="1"
+    android:orientation="horizontal"
+    tools:context="com.example.mileto.healthglass.ListenCommentActivity">
+
+
+    <Button
+        android:text="@string/listenComment"
+        android:id="@+id/buttonListenComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_row="1"
+
+        android:layout_gravity="center" />
+    <Button
+        android:text="@string/deleteComment"
+        android:id="@+id/buttonDeleteComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_row="2"
+
+        android:layout_gravity="center" />
+
+    <TextView
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_row="0"
+
+        android:layout_gravity="center"
+        android:id="@+id/textviewPlayComment" />
+
+
+</GridLayout>
