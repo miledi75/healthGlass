@@ -194,6 +194,9 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * this function handles the selection through voicecontrol or gesturecontrol
+     */
     public void handleSelection()
     {
         //check if buttons are selected/have focus
@@ -223,21 +226,86 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
                 protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()+1);
             }
         }
-
-        //check if item in listview is selected/has focus
     }
 
     /**
      * function that reacts to the helprequest for a specific protocolItem
      * called by voiceControl or gestureControl
      * uses the proocolItemId to get a youtube identifier from a REST server call
-     * @param protocolItemId
      */
-    public void getHelpForProtocolItem(int protocolItemId)
+    public void getHelpForProtocolItem()
     {
-        Intent youtubePlayerIntent = new Intent(getApplicationContext(),HelpVideoActivity.class);
-        youtubePlayerIntent.putExtra("protocolItemId",protocolItemId);
-        startActivity(youtubePlayerIntent);
+        if(protocolItemsListview.getSelectedItem() != null)
+        {
+            //create a patientprotocolItem object to get the selected patientProtocolItem
+            PatientProtocolItem pi = (PatientProtocolItem) protocolItemsListview.getSelectedItem();
+            //send the protocolItemId to the youtube intent to retrieve and play the video
+
+            Intent youtubePlayerIntent = new Intent(getApplicationContext(),HelpVideoActivity.class);
+            youtubePlayerIntent.putExtra("protocolItemId",pi.getProtocolItemId());
+            startActivity(youtubePlayerIntent);
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Select a protocolitem!",Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    /**
+     * function that handles UI movement down for VoiceControl and GestureControl
+     */
+    public void moveDown()
+    {
+        //check if listview is selected => go to the next item in the listview
+        if(protocolItemsListview.hasFocus())
+        {
+            //check if we are at the end of the list => go to the picturebutton
+            if(protocolItemsListview.getSelectedItemPosition() == numberOfProtocolItems-1)
+            {
+                pictureButton.requestFocus();
+            }
+            else // go to the next protocolitem
+            {
+                protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()+1);
+            }
+        }
+        //check if the imagesbutton is selected => go to the commentbutton
+        else if(pictureButton.hasFocus())
+        {
+            audioRecordButton.requestFocus();
+        }
+        else //comment button has focus: go to the listview
+        {
+            protocolItemsListview.requestFocus();
+        }
+    }
+
+    public void moveUp()
+    {
+        //check if listview is selected => go to the previous item in the listview
+        if(protocolItemsListview.hasFocus())
+        {
+            //check if we are at the beginning of the list => go to the commentButton
+            if(protocolItemsListview.getSelectedItemPosition() == 0)
+            {
+                pictureButton.requestFocus();
+            }
+            else // go to the previous protocolitem
+            {
+                protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()-1);
+            }
+        }
+        //check if the imagesbutton is selected => go to the listview
+        else if(pictureButton.hasFocus())
+        {
+            protocolItemsListview.requestFocus();
+        }
+        else //comment button has focus: go to the imagesButton
+        {
+            pictureButton.requestFocus();
+        }
     }
 
     //inner class myvoicecontrol
@@ -263,17 +331,19 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
 
             if(this.command.equals("show help"))
             {
-                //check if there is a protocolItem selected/highlighted
-                if(protocolItemsListview.getSelectedItem() != null)
-                {
-                    //create a patientprotocolItem object to get the selected patientProtocolItem
-                    PatientProtocolItem pi = (PatientProtocolItem) protocolItemsListview.getSelectedItem();
-                    //send the protocolItemId to the youtube intent to retrieve and play the video
-                    getHelpForProtocolItem(pi.getProtocolItemId());
-                }
-
+                getHelpForProtocolItem();
             }
 
+            if(this.command.equals("go down"))
+            {
+                moveDown();
+            }
+
+
+            if(this.command.equals("go up"))
+            {
+                moveUp();
+            }
         }
 
         @Override
@@ -296,13 +366,13 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         @Override
         protected void onBackSwipe()
         {
-
+            moveUp();
         }
 
         @Override
         protected void onForwardSwipe()
         {
-
+            moveDown();
         }
 
         @Override
@@ -314,7 +384,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         @Override
         protected void onFar()
         {
-
+            getHelpForProtocolItem();
         }
 
         @Override
