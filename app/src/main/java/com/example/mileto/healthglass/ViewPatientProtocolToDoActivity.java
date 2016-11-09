@@ -1,23 +1,21 @@
 package com.example.mileto.healthglass;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
-import android.os.Environment;
-import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckedTextView;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.vuzix.hardware.GestureSensor;
+import com.vuzix.speech.VoiceControl;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
 
@@ -26,6 +24,10 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
     private ListView            protocolItemsListview;
     private String              patientIdFromBarcode;
     private String              protocolId;
+    private MyVoiceControl      mVc;
+    private MyGestureControl    mGc;
+    private int                 numberOfProtocolItems;
+    private int                 numberOfProtocolItemsPerformed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -95,11 +97,54 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         protocolItemsAdapter.add(protocolItem2);
         protocolItemsAdapter.add(protocolItem3);
 
+        //get the number of protocolitems to be performed
+        numberOfProtocolItems = protocolItemsAdapter.getCount();
         //allow multiple selections of checkboxes
         protocolItemsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         //set the onitemclicklistener to the custom clicklistener for the checkboxes
         protocolItemsListview.setOnItemClickListener(new CheckboxClickListener());
 
+        //Voicecontrol and gesturecontrol
+        //activate voice control
+        try
+        {
+            mVc = new MyVoiceControl(getApplicationContext());
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG);
+        }
+
+        //activate gestureControl
+        //check if gesturesensor is on
+        if(GestureSensor.isOn())
+        {
+            try
+            {
+                mGc = new MyGestureControl(getApplicationContext());
+                if (mGc == null) {
+                    Toast.makeText(this, "Cannot create gestureSensor", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    //activate gesturesensor
+                    GestureSensor.On();
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            GestureSensor.On();
+        }
 
     }
 
@@ -148,4 +193,114 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void handleSelection()
+    {
+        //check if buttons are selected/have focus
+        if(audioRecordButton.hasFocus())
+        {
+            activateRecorderIntent();
+        }
+        else if(pictureButton.hasFocus())
+        {
+            activateCameraIntent();
+        }
+        else if(protocolItemsListview.hasFocus())
+        {
+            //get the number of items already performed in the protocol list
+            numberOfProtocolItemsPerformed = protocolItemsListview.getCheckedItemCount();
+            //compare the nuberperformed to the number to perform
+            if(numberOfProtocolItemsPerformed == numberOfProtocolItems)
+            {
+                //Protocol is finished, display message
+                Toast.makeText(getApplicationContext(),"Protocol completed",Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                //get the first item that has focus or call the itemclicklistener
+                protocolItemsListview.performClick();
+                //go to the next item
+                protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()+1);
+            }
+        }
+
+        //check if item in listview is selected/has focus
+    }
+
+    public void getHelpForProtocolItem(int protocolItemId)
+    {
+
+    }
+
+    //inner class myvoicecontrol
+    public class MyVoiceControl extends VoiceControl
+    {
+        private String command;
+        private Context activityContext;
+
+        public MyVoiceControl(Context context)
+        {
+            super(context);
+            this.activityContext = context;
+        }
+
+
+        protected void onRecognition(String result)
+        {
+            this.command = result;
+            if(this.command.equals("select"))
+            {
+                handleSelection();
+            }
+
+        }
+
+        @Override
+        public String toString()
+        {
+            return command;
+        }
+    }
+    //end of Vuzix voice control class
+
+    //inner class myGestureControl
+    public class MyGestureControl extends GestureSensor
+    {
+
+        public MyGestureControl(Context context)
+        {
+            super(context);
+        }
+
+        @Override
+        protected void onBackSwipe()
+        {
+
+        }
+
+        @Override
+        protected void onForwardSwipe()
+        {
+
+        }
+
+        @Override
+        protected void onNear()
+        {
+            handleSelection();
+        }
+
+        @Override
+        protected void onFar()
+        {
+
+        }
+
+        @Override
+        public String toString()
+        {
+            return super.toString();
+        }
+    }
+    //end inner class myGestureControl
 }

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
 {
-    private Button              pictureButton;
-    private Button              audioRecordButton;
+    private Button              viewPicturesButton;
+    private Button              viewRecordingsButton;
     private ListView            protocolItemsListview;
     private String              patientIdFromBarcode;
     private String              protocolId;
@@ -33,13 +33,13 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         this.protocolId             = patientInfoActivity.getStringExtra("protocolId");
 
         //initialize UI elements
-        pictureButton           = (Button) findViewById(R.id.buttonViewPictures);
-        audioRecordButton       = (Button) findViewById(R.id.buttonViewRecordings);
+        viewPicturesButton           = (Button) findViewById(R.id.buttonViewPictures);
+        viewRecordingsButton      = (Button) findViewById(R.id.buttonViewRecordings);
         protocolItemsListview   = (ListView) findViewById(R.id.listViewProtocolItemsPerformed);
 
         //add the action listeners for the buttons
 
-        pictureButton.setOnClickListener(new View.OnClickListener()
+        viewPicturesButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
@@ -49,7 +49,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         });
 
 
-        audioRecordButton.setOnClickListener(new View.OnClickListener() {
+        viewRecordingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
@@ -65,8 +65,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
                 ProtocolItemsAdapter pI = (ProtocolItemsAdapter) parent.getAdapter();
                 Toast toast = new Toast(getApplicationContext());
                 Toast.makeText(getApplicationContext(),Integer.toString(position),Toast.LENGTH_SHORT).show();
-
-
             }
         });
         //populate the listview with the protocolItems
@@ -80,21 +78,14 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         //Attach the adapter to the listview
         protocolItemsListview.setAdapter(protocolItemsAdapter);
         //Create testData and add to adapter to update view
-        PatientProtocolItem protocolItem1 = new PatientProtocolItem("remove bandage",false);
-        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Clean and desinfect",false);
-        PatientProtocolItem protocolItem3 = new PatientProtocolItem("renew bandage",false);
+        PatientProtocolItem protocolItem1 = new PatientProtocolItem("remove bandage",true);
+        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Clean and desinfect",true);
+        PatientProtocolItem protocolItem3 = new PatientProtocolItem("renew bandage",true);
 
         //update the adapter
         protocolItemsAdapter.add(protocolItem1);
         protocolItemsAdapter.add(protocolItem2);
         protocolItemsAdapter.add(protocolItem3);
-
-        //allow multiple selections of checkboxes
-        protocolItemsListview.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        //set the onitemclicklistener to the custom clicklistener for the checkboxes
-        protocolItemsListview.setOnItemClickListener(new CheckboxClickListener());
-
-
     }
 
     private void activateCameraIntent()
@@ -116,6 +107,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         //so the audiorecorder can build the path to save the recordings
         recordCommentIntent.putExtra("patientID",this.patientIdFromBarcode);
         recordCommentIntent.putExtra("protocolID",this.protocolId);
+        //variable to indicate that the call is coming from protocolPerformed
         recordCommentIntent.putExtra("performed",true);
         //call the activity
         startActivity(recordCommentIntent);
@@ -123,9 +115,10 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
 
     //INNER CLASSESS
 
+
     /**
      * this class handles the checkbox setting/unsetting in the listview with protocolItems
-     */
+
     public class CheckboxClickListener implements AdapterView.OnItemClickListener
     {
 
@@ -144,5 +137,5 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
                 //Toast.makeText(getApplicationContext(), "now it is checked", Toast.LENGTH_SHORT).show();
             }
         }
-    }
+    }*/
 }
