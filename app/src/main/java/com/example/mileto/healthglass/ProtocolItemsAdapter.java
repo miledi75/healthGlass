@@ -36,7 +36,7 @@ public class ProtocolItemsAdapter extends ArrayAdapter<PatientProtocolItem>
         }
 
         //get references to the UI elements to populate them
-        protocolItem           = (CheckedTextView) convertView.findViewById(R.id.checkedTextViewProtocolItem);
+        protocolItem    = (CheckedTextView) convertView.findViewById(R.id.checkedTextViewProtocolItem);
        // protocolItemCheckbox   = (CheckBox) convertView.findViewById(R.id.checkBoxProtocolItem);
         //populate the data
         protocolItem.setText(patientProtocolItem.getProtocolItemName());

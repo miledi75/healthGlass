@@ -249,8 +249,6 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             Toast.makeText(getApplicationContext(),"Select a protocolitem!",Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     /**
