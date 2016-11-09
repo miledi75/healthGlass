@@ -88,9 +88,9 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         //Attach the adapter to the listview
         protocolItemsListview.setAdapter(protocolItemsAdapter);
         //Create testData and add to adapter to update view
-        PatientProtocolItem protocolItem1 = new PatientProtocolItem("remove bandage",false);
-        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Clean and desinfect",false);
-        PatientProtocolItem protocolItem3 = new PatientProtocolItem("renew bandage",false);
+        PatientProtocolItem protocolItem1 = new PatientProtocolItem("remove bandage",false,1);
+        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Clean and desinfect",false,2);
+        PatientProtocolItem protocolItem3 = new PatientProtocolItem("renew bandage",false,3);
 
         //update the adapter
         protocolItemsAdapter.add(protocolItem1);
@@ -227,9 +227,17 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         //check if item in listview is selected/has focus
     }
 
+    /**
+     * function that reacts to the helprequest for a specific protocolItem
+     * called by voiceControl or gestureControl
+     * uses the proocolItemId to get a youtube identifier from a REST server call
+     * @param protocolItemId
+     */
     public void getHelpForProtocolItem(int protocolItemId)
     {
-
+        Intent youtubePlayerIntent = new Intent(getApplicationContext(),HelpVideoActivity.class);
+        youtubePlayerIntent.putExtra("protocolItemId",protocolItemId);
+        startActivity(youtubePlayerIntent);
     }
 
     //inner class myvoicecontrol
@@ -251,6 +259,19 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             if(this.command.equals("select"))
             {
                 handleSelection();
+            }
+
+            if(this.command.equals("show help"))
+            {
+                //check if there is a protocolItem selected/highlighted
+                if(protocolItemsListview.getSelectedItem() != null)
+                {
+                    //create a patientprotocolItem object to get the selected patientProtocolItem
+                    PatientProtocolItem pi = (PatientProtocolItem) protocolItemsListview.getSelectedItem();
+                    //send the protocolItemId to the youtube intent to retrieve and play the video
+                    getHelpForProtocolItem(pi.getProtocolItemId());
+                }
+
             }
 
         }

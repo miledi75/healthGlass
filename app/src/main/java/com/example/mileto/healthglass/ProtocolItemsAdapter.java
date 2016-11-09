@@ -47,5 +47,4 @@ public class ProtocolItemsAdapter extends ArrayAdapter<PatientProtocolItem>
         return convertView;
     }
 
-
 }

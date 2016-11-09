@@ -7,14 +7,16 @@ package com.example.mileto.healthglass;
 
 public class PatientProtocolItem
 {
-    private String  protocolItemName;
+    private String      protocolItemName;
     //true = performed, false = not performed
     private Boolean     status;
+    private int         protocolItemId;
 
-    public PatientProtocolItem(String protocolItemName, Boolean status)
+    public PatientProtocolItem(String protocolItemName, Boolean status,int Id)
     {
-        this.protocolItemName = protocolItemName;
-        this.status = status;
+        this.protocolItemName   = protocolItemName;
+        this.status             = status;
+        this.protocolItemId     = Id;
     }
 
     public String getProtocolItemName()
@@ -30,6 +32,16 @@ public class PatientProtocolItem
     public Boolean getStatus()
     {
         return status;
+    }
+
+    public int getProtocolItemId()
+    {
+        return protocolItemId;
+    }
+
+    public void setProtocolItemId(int protocolItemId)
+    {
+        this.protocolItemId = protocolItemId;
     }
 
     public void setStatus(Boolean status)
