@@ -1,34 +1,25 @@
 package com.example.mileto.healthglass;
 
 import android.content.Intent;
-import android.media.MediaRecorder;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class CommentsActivity extends AppCompatActivity
 {
 
-    private Button          addComment;
+    private Button          addCommentButton;
     private ListView        listviewRecordings;
     private String          recordingPath;
     private String          patientID;
@@ -47,24 +38,37 @@ public class CommentsActivity extends AppCompatActivity
         //prepare the UI elements
 
         //Get the patientID and the protocolID from te intent
-        Intent fromProtocolToDo = getIntent();
-        patientID               = fromProtocolToDo.getStringExtra("patientID");
-        protocolID              = fromProtocolToDo.getStringExtra("protocolID");
+        Intent fromProtocolActivity = getIntent();
+        patientID               = fromProtocolActivity.getStringExtra("patientID");
+        protocolID              = fromProtocolActivity.getStringExtra("protocolID");
+
+        //check if the request is coming from a performed protocol
+        if(fromProtocolActivity.getStringExtra("performed") != null)
+        {
+            //disable/hide the add comment button
+            addCommentButton.setVisibility(View.INVISIBLE);
+        }
         //build the path to save the recording
 
         //initialize buttons
-        addComment      = (Button) findViewById(R.id.buttonAddComment);
+        addCommentButton = (Button) findViewById(R.id.buttonAddComment);
 
 
         //initialize listview
         listviewRecordings = (ListView) findViewById(R.id.listviewRecordings);
 
+        //check if the request is coming from a performed protocol
+        if(fromProtocolActivity.getStringExtra("performed") != null)
+        {
+            //disable/hide the add comment button
+            addCommentButton.setVisibility(View.INVISIBLE);
+        }
 
         //get the recordingpath for the comments
         recordingPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+patientID+"/"+this.protocolID;
         loadCommentsInListview();
         //OnclickListenrers for the Buttons
-        addComment.setOnClickListener(new View.OnClickListener()
+        addCommentButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)

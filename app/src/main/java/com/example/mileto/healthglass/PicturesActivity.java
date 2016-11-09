@@ -1,9 +1,6 @@
 package com.example.mileto.healthglass;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -14,13 +11,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListView;
-
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,7 +26,7 @@ public class PicturesActivity extends AppCompatActivity
 
     private static final int    REQUEST_IMAGE_CAPTURE = 20;
     private static final String DIRECTORY_NAME="/woundCare";
-    private Button              pictureButton;
+    private Button              AddimagesButton;
     private GridView            imageGridView;
     private String              imagesDirectoryPath;
     private Uri                 imageUri;
@@ -49,20 +41,27 @@ public class PicturesActivity extends AppCompatActivity
         setContentView(R.layout.activity_pictures);
 
         //get the protocolId from the PatientInfoActivity Intent
-        Intent patientInfoActivity  = getIntent();
-        this.patientIdFromBarcode   = patientInfoActivity.getStringExtra("patientId");
-        this.protocolId             = patientInfoActivity.getStringExtra("protocolId");
+        Intent fromProtocolActivity         = getIntent();
+        this.patientIdFromBarcode           = fromProtocolActivity.getStringExtra("patientId");
+        this.protocolId                     = fromProtocolActivity.getStringExtra("protocolId");
 
         //initialize directory path
         imagesDirectoryPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+this.patientIdFromBarcode+"/"+this.protocolId;
 
         //initialize UI elements
-        pictureButton           = (Button) findViewById(R.id.buttonAddPicture);
+        AddimagesButton = (Button) findViewById(R.id.buttonAddPicture);
 
         imageGridView           = (GridView) findViewById(R.id.imagesGriedViewToDo);
 
+        //check if the request is coming from a performed protocol
+        if(fromProtocolActivity.getStringExtra("performed") != null)
+        {
+            //disable/hide the add image button
+            AddimagesButton.setVisibility(View.INVISIBLE);
+        }
+
         //onclicklistener for the picturebutton
-        pictureButton.setOnClickListener(new View.OnClickListener()
+        AddimagesButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
