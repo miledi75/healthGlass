@@ -266,13 +266,13 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         }
 
         @Override
-        protected void onBackSwipe()
+        protected void onBackSwipe(int i)
         {
             moveUp();
         }
 
         @Override
-        protected void onForwardSwipe()
+        protected void onForwardSwipe(int i)
         {
             moveDown();
         }

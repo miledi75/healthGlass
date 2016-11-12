@@ -1,5 +1,6 @@
 package com.example.mileto.healthglass;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,19 +10,22 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+//import com.vuzix.hardware.GestureSensor;
+//import com.vuzix.speech.VoiceControl;
+
 import com.vuzix.hardware.GestureSensor;
 import com.vuzix.speech.VoiceControl;
 
 import java.util.ArrayList;
 
 
-public class ExtraParametersActivity extends AppCompatActivity
+public class ExtraParametersActivity extends Activity
 {
 
     private String patientId;
     private ListView extraParameterList;
     private MyVoiceControl mVc;
-    private MyGestureControl mGc;
+    private GestureSensor mGc;
     private Button closeButton;
     ArrayList<ExtraParameter> parameters;
 
@@ -101,13 +105,15 @@ public class ExtraParametersActivity extends AppCompatActivity
             try
             {
                 mGc = new MyGestureControl(getApplicationContext());
-                if (mGc == null) {
+                if (mGc == null)
+                {
                     Toast.makeText(this, "Cannot create gestureSensor", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
                     //activate gesturesensor
-                    GestureSensor.On();
+                    mGc.register();
+
                 }
             }
             catch(Exception e)
@@ -118,7 +124,6 @@ public class ExtraParametersActivity extends AppCompatActivity
         else
         {
             Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
-            GestureSensor.On();
         }
 
 
@@ -134,6 +139,8 @@ public class ExtraParametersActivity extends AppCompatActivity
 
     }
 
+
+    //take care off voice and gesture deactivation when activity loses focus
     @Override
     public void onPause()
     {
@@ -156,9 +163,42 @@ public class ExtraParametersActivity extends AppCompatActivity
         {
             if(mGc != null)
             {
-                GestureSensor.Off();
+                mGc.unregister();
             }
             super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+        }
+    }
+
+    //reactivate voiceControl and gestureControl when acitivity regains focus
+    @Override
+    public void onResume()
+    {
+        //activate voice control
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+            super.onResume();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+        }
+
+        //activate gestureControl
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+            super.onResume();
         }
         catch(Exception e)
         {
@@ -202,41 +242,44 @@ public class ExtraParametersActivity extends AppCompatActivity
     //inner class myGestureControl
     public class MyGestureControl extends GestureSensor
     {
-
         public MyGestureControl(Context context)
         {
             super(context);
         }
 
         @Override
-        protected void onBackSwipe()
-        {
+        protected void onUp(int i) {
+            super.onUp(i);
+        }
+
+        @Override
+        protected void onDown(int i) {
+            super.onDown(i);
+        }
+
+        @Override
+        protected void onSensorBlocked(boolean b) {
+            super.onSensorBlocked(b);
+        }
+
+        @Override
+        protected void onBackSwipe(int i) {
 
         }
 
         @Override
-        protected void onForwardSwipe()
-        {
+        protected void onForwardSwipe(int i) {
 
         }
 
         @Override
-        protected void onNear()
-        {
+        protected void onNear() {
 
         }
 
         @Override
-        protected void onFar()
-        {
-            //go back to patientInfoActivity
-            finish();
-        }
+        protected void onFar() {
 
-        @Override
-        public String toString()
-        {
-            return super.toString();
         }
     }
     //end inner class myGestureControl

@@ -4,10 +4,6 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,14 +14,12 @@ import android.view.MenuItem;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
-import android.icu.util.*;
 
 
 public class HelpVideoActivity extends AppCompatActivity
-{
+//{
 
     private static final int RECOVERY_REQUEST = 1;
-    private YouTubePlayerView myYoutubePlayer;
     private String youtubeLinkIdentifier;
     private String protocolItemId;
 
@@ -52,15 +46,12 @@ public class HelpVideoActivity extends AppCompatActivity
             finish();
         }
 
-        String SrcPath = "https://m.youtube.com/watch?v=4Aa9GwWaRv0&itct=CA8QpDAYACITCKfh-KO3oNACFQzXFgodHhQAVTIHcmVsYXRlZEj13d6i7q3pwosB&hl=en&gl=IN&client=mv-google";
+        String SrcPath = "http://chamilo.arteveldehs.be/index.php?go=document_downloader&object=1411819&security_code=c95f82d406888a297500036c22168c6419d28300&application=repository&display=1";
         VideoView myVideoView = (VideoView)findViewById(R.id.myvideoview);
         myVideoView.setVideoURI(Uri.parse(SrcPath));
+
         myVideoView.setMediaController(new MediaController(this));
         myVideoView.requestFocus();
         myVideoView.start();
-
-
     }
-
-
 }

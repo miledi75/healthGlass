@@ -132,7 +132,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
                 else
                 {
                     //activate gesturesensor
-                    GestureSensor.On();
+                    mGc.register();
                 }
             }
             catch(Exception e)
@@ -362,13 +362,13 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onBackSwipe()
+        protected void onBackSwipe(int i)
         {
             moveUp();
         }
 
         @Override
-        protected void onForwardSwipe()
+        protected void onForwardSwipe(int i)
         {
             moveDown();
         }

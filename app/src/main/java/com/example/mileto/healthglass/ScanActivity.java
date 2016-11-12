@@ -150,7 +150,7 @@ public class ScanActivity extends AppCompatActivity
         {
             if(mGc != null)
             {
-                GestureSensor.Off();
+                mGc.unregister();
             }
             super.onPause();
         }
@@ -233,7 +233,7 @@ public class ScanActivity extends AppCompatActivity
         {
             if(mGc != null)
             {
-                GestureSensor.Off();
+                mGc.unregister();
             }
             super.onPause();
         }
@@ -286,13 +286,13 @@ public class ScanActivity extends AppCompatActivity
         }
 
         @Override
-        protected void onBackSwipe()
+        protected void onBackSwipe(int i)
         {
 
         }
 
         @Override
-        protected void onForwardSwipe()
+        protected void onForwardSwipe(int i)
         {
 
         }
