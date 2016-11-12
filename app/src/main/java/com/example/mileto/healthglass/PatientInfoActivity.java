@@ -111,7 +111,9 @@ public class PatientInfoActivity extends AppCompatActivity
                     // Toast.makeText(getApplicationContext(),selectedFromList, Toast.LENGTH_SHORT).show();
                     Intent protocolPerformedActivityIntent = new Intent(getApplicationContext(),ViewPatientProtocolPerformedActivity.class);
                     //add patientId info variable to intent
-                    protocolPerformedActivityIntent.putExtra("protocolId",strPosition);
+                    //for testing purposes
+                    protocolPerformedActivityIntent.putExtra("protocolId","2");
+                    //protocolPerformedActivityIntent.putExtra("protocolId",strPosition);
                     protocolPerformedActivityIntent.putExtra("patientId",patientId);
                     //call the patientInfoActivity
                     startActivity(protocolPerformedActivityIntent);
@@ -122,7 +124,9 @@ public class PatientInfoActivity extends AppCompatActivity
                     Intent protocolToDoActivityIntent = new Intent(getApplicationContext(),ViewPatientProtocolToDoActivity.class);
                     //add patientId info variable to intent
                     protocolToDoActivityIntent.putExtra("protocolId",strPosition);
-                    protocolToDoActivityIntent.putExtra("patientId",patientId);
+                    //for testing purposes
+                    protocolToDoActivityIntent.putExtra("patientId","2");
+                    //protocolToDoActivityIntent.putExtra("patientId",patientId);
                     //call the patientInfoActivity
                     startActivity(protocolToDoActivityIntent);
                 }
@@ -157,7 +161,6 @@ public class PatientInfoActivity extends AppCompatActivity
     public void displayVoiceCommand(String voiceCommand)
     {
         Toast.makeText(this,voiceCommand,Toast.LENGTH_SHORT).show();
-
     }
 
 

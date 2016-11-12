@@ -143,7 +143,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         else
         {
             Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
-            GestureSensor.On();
+            //GestureSensor.On();
         }
 
     }
@@ -221,7 +221,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             else
             {
                 //get the first item that has focus or call the itemclicklistener
-                protocolItemsListview.performClick();
+                protocolItemsListview.callOnClick();
                 //go to the next item
                 protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()+1);
             }

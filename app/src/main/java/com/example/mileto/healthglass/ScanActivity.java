@@ -64,7 +64,7 @@ public class ScanActivity extends AppCompatActivity
                 else
                 {
                     //activate gesturesensor
-                    GestureSensor.On();
+                    //GestureSensor.On();
                 }
             }
             catch(Exception e)
@@ -75,7 +75,14 @@ public class ScanActivity extends AppCompatActivity
         else
         {
             Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
-            GestureSensor.On();
+            try
+            {
+                //GestureSensor.On();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -109,7 +116,7 @@ public class ScanActivity extends AppCompatActivity
         {
             if(mGc != null)
             {
-                GestureSensor.On();
+                //GestureSensor.On();
             }
             super.onPause();
         }

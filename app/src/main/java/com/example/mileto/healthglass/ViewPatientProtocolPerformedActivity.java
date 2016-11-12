@@ -30,7 +30,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_patient_protocol_to_do);
+        setContentView(R.layout.activity_view_patient_protocol_performed);
 
         //get the protocolId from the PatientInfoActivity Intent
         Intent patientInfoActivity  = getIntent();

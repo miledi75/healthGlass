@@ -10,10 +10,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.mileto.healthglass.HelpVideoActivity">
 
-    <com.google.android.youtube.player.YouTubePlayerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/youtubeViewer"
-    />
+    <VideoView
+        android:id="@+id/myvideoview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

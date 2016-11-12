@@ -47,7 +47,7 @@ public class PicturesActivity extends AppCompatActivity
 
         //initialize directory path
         imagesDirectoryPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+this.patientIdFromBarcode+"/"+this.protocolId;
-
+        Log.d("imageDirectory:","Path:"+imagesDirectoryPath);
         //initialize UI elements
         AddimagesButton = (Button) findViewById(R.id.buttonAddPicture);
 

@@ -40,7 +40,7 @@ public class ProtocolItemsAdapter extends ArrayAdapter<PatientProtocolItem>
        // protocolItemCheckbox   = (CheckBox) convertView.findViewById(R.id.checkBoxProtocolItem);
         //populate the data
         protocolItem.setText(patientProtocolItem.getProtocolItemName());
-        protocolItem.setChecked(false);
+        protocolItem.setChecked(patientProtocolItem.getStatus());
         //protocolItemCheckbox.setChecked(patientProtocolItem.getStatus());
         //return the view to render on the screen
 
