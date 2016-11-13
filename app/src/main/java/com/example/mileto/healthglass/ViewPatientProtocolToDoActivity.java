@@ -1,10 +1,16 @@
 package com.example.mileto.healthglass;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -15,6 +21,7 @@ import android.widget.Toast;
 import com.vuzix.hardware.GestureSensor;
 import com.vuzix.speech.VoiceControl;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
@@ -28,6 +35,8 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
     private MyGestureControl    mGc;
     private int                 numberOfProtocolItems;
     private int                 numberOfProtocolItemsPerformed;
+    private AlertDialog.Builder goHomeDilaogBuilder;
+    private AlertDialog         goHomeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -212,6 +221,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             //get the number of items already performed in the protocol list
             numberOfProtocolItemsPerformed = protocolItemsListview.getCheckedItemCount();
+            Toast.makeText(getApplicationContext(),Integer.toString(numberOfProtocolItemsPerformed),Toast.LENGTH_SHORT);
             //compare the nuberperformed to the number to perform
             if(numberOfProtocolItemsPerformed == numberOfProtocolItems)
             {
@@ -221,7 +231,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             else
             {
                 //get the first item that has focus or call the itemclicklistener
-                protocolItemsListview.callOnClick();
+                protocolItemsListview.performItemClick(protocolItemsListview.getChildAt(protocolItemsListview.getSelectedItemPosition()),protocolItemsListview.getSelectedItemPosition(),protocolItemsListview.getItemIdAtPosition(protocolItemsListview.getSelectedItemPosition()));
                 //go to the next item
                 protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()+1);
             }
@@ -342,6 +352,20 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             {
                 moveUp();
             }
+
+            if(this.command.equals("stop"))
+            {
+                goHome();
+                if(this.command.equals("cancel"))
+                {
+
+                }
+                else if (this.command.equals("go"))
+                {
+
+                }
+            }
+
         }
 
         @Override
@@ -349,6 +373,41 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             return command;
         }
+    }
+
+    /**
+     * takes user back to homepage
+     */
+    private void goHome()
+    {
+        //present a dialog to query user
+        //build a user dialog
+        goHomeDilaogBuilder = new AlertDialog.Builder(this);
+        goHomeDilaogBuilder.setMessage("Go to scan page?");
+        //positive clicklistener
+        goHomeDilaogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                //go back to the home page
+                Intent in = new Intent(getApplicationContext(),ScanActivity.class);
+            }
+        });
+
+        //negative clickListener
+        goHomeDilaogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        //create the dialog and show it
+        goHomeDialog = goHomeDilaogBuilder.create();
+        goHomeDialog.show();
     }
     //end of Vuzix voice control class
 

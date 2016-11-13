@@ -6,18 +6,13 @@ import android.os.Bundle;
 
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.text.Layout;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 
 public class HelpVideoActivity extends AppCompatActivity
-//{
+{
 
     private static final int RECOVERY_REQUEST = 1;
     private String youtubeLinkIdentifier;
