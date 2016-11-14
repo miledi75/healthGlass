@@ -260,7 +260,40 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),"Select a protocolitem!",Toast.LENGTH_SHORT).show();
         }
     }
+    /**
+     * takes user back to homepage
+     */
+    private void goHome()
+    {
+        //present a dialog to query user
+        //build a user dialog
+        goHomeDilaogBuilder = new AlertDialog.Builder(this);
+        goHomeDilaogBuilder.setMessage("Go to scan page?");
+        //positive clicklistener
+        goHomeDilaogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                //go back to the home page
+                Intent in = new Intent(getApplicationContext(),ScanActivity.class);
+            }
+        });
 
+        //negative clickListener
+        goHomeDilaogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        //create the dialog and show it
+        goHomeDialog = goHomeDilaogBuilder.create();
+        goHomeDialog.show();
+    }
     /**
      * function that handles UI movement down for VoiceControl and GestureControl
      */
@@ -355,14 +388,16 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
 
             if(this.command.equals("stop"))
             {
+                //call the dialog to query user to go home
                 goHome();
                 if(this.command.equals("cancel"))
                 {
-
+                    goHomeDialog.dismiss();
                 }
                 else if (this.command.equals("go"))
                 {
-
+                    //activiate the click event of the yes button
+                    goHomeDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
                 }
             }
 
@@ -375,40 +410,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * takes user back to homepage
-     */
-    private void goHome()
-    {
-        //present a dialog to query user
-        //build a user dialog
-        goHomeDilaogBuilder = new AlertDialog.Builder(this);
-        goHomeDilaogBuilder.setMessage("Go to scan page?");
-        //positive clicklistener
-        goHomeDilaogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                //go back to the home page
-                Intent in = new Intent(getApplicationContext(),ScanActivity.class);
-            }
-        });
 
-        //negative clickListener
-        goHomeDilaogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                dialog.dismiss();
-            }
-        });
-
-        //create the dialog and show it
-        goHomeDialog = goHomeDilaogBuilder.create();
-        goHomeDialog.show();
-    }
     //end of Vuzix voice control class
 
     //inner class myGestureControl
