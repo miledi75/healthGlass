@@ -30,6 +30,9 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     private AlertDialog.Builder goHomeDilaogBuilder;
     private AlertDialog         goHomeDialog;
 
+    private VoiceControl        mVc;
+    private GestureSensor       mGc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -95,6 +98,48 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         protocolItemsAdapter.add(protocolItem1);
         protocolItemsAdapter.add(protocolItem2);
         protocolItemsAdapter.add(protocolItem3);
+
+        //Voicecontrol and gesturecontrol
+        //activate voice control
+        try
+        {
+            mVc = new MyVoiceControl(getApplicationContext());
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG);
+        }
+
+        //activate gestureControl
+        //check if gesturesensor is on
+        if(GestureSensor.isOn())
+        {
+            try
+            {
+                mGc = new MyGestureControl(getApplicationContext());
+                if (mGc == null) {
+                    Toast.makeText(this, "Cannot create gestureSensor", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    //activate gesturesensor
+                    mGc.register();
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //GestureSensor.On();
+        }
     }
 
     private void activateCameraIntent()
@@ -244,7 +289,10 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
                 moveDown();
             }
 
-
+            if(this.command.equals("go back"))
+            {
+                finish();
+            }
             if(this.command.equals("go up"))
             {
                 moveUp();
@@ -253,13 +301,23 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             {
                 //call the dialog to query user to go home
                 goHome();
-                if(this.command.equals("cancel"))
+            }
+
+            if(this.command.equals("cancel"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
                 {
                     goHomeDialog.dismiss();
                 }
-                else if (this.command.equals("go"))
+
+            }
+            if (this.command.equals("go"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
                 {
-                    //activiate the click event of the yes button
+                    //activate the click event of the yes button
                     goHomeDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
                 }
             }
@@ -303,6 +361,103 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         }
 
     }
+    @Override
+    public void onPause()
+    {
+        //deactivate voice
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onResume()
+    {
+        //register voice
+        try
+        {
+            if (mVc != null)
+            {
+                mVc.on();
+            }
+            super.onResume();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+            super.onDestroy();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 
@@ -339,7 +494,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         @Override
         protected void onFar()
         {
-            getHelpForProtocolItem();
+            finish();
         }
 
         @Override

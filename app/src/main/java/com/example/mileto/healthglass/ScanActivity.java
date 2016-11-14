@@ -131,7 +131,7 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        //disaactiivate voicecontrol
+        //disactivate voicecontrol
         try
         {
             if(mVC != null)
@@ -168,7 +168,7 @@ public class ScanActivity extends AppCompatActivity
         patientInfoActivityIntent.putExtra("patientId","3145891164206");
         //call the patientInfoActivity
         startActivity(patientInfoActivityIntent);
-        //UNCOMMENT TO ACTIAVTE SCANNER INTENT, COMMENTED FOR TESTING PURPOSES
+        //UNCOMMENT TO ACTIVQTE SCANNER INTENT, COMMENTED FOR TESTING PURPOSES
         /*Call the Zxing google scanner through intent
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 
@@ -262,8 +262,13 @@ public class ScanActivity extends AppCompatActivity
             this.command = result;
             if(this.command.equals("select"))
             {
-                //Button scanButton = (Button) ((Activity) this.activityContext).findViewById(R.id.scanCode);
-                scanButton.callOnClick();
+                handleSelection();
+            }
+
+            if(this.command.equals("stop"))
+            {
+                //go back to vuzix home screen
+                finish();
             }
 
         }
@@ -300,13 +305,13 @@ public class ScanActivity extends AppCompatActivity
         @Override
         protected void onNear()
         {
-            scanButton.callOnClick();
+            handleSelection();
         }
 
         @Override
         protected void onFar()
         {
-
+            finish();
         }
 
         @Override
@@ -314,6 +319,11 @@ public class ScanActivity extends AppCompatActivity
         {
             return super.toString();
         }
+    }
+
+    private void handleSelection()
+    {
+        scanButton.callOnClick();
     }
     //end inner class myGestureControl
 }

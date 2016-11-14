@@ -277,6 +277,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             {
                 //go back to the home page
                 Intent in = new Intent(getApplicationContext(),ScanActivity.class);
+                startActivity(in);
             }
         });
 
@@ -349,6 +350,104 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPause()
+    {
+        //deactivate voice
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onResume()
+    {
+        //register voice
+        try
+        {
+            if (mVc != null)
+            {
+                mVc.on();
+            }
+            super.onResume();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+            super.onDestroy();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
     //inner class myvoicecontrol
     public class MyVoiceControl extends VoiceControl
     {
@@ -390,13 +489,28 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             {
                 //call the dialog to query user to go home
                 goHome();
-                if(this.command.equals("cancel"))
+            }
+
+            if(this.command.equals("go back"))
+            {
+                finish();
+            }
+
+            if(this.command.equals("cancel"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
                 {
                     goHomeDialog.dismiss();
                 }
-                else if (this.command.equals("go"))
+
+            }
+            if (this.command.equals("go"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
                 {
-                    //activiate the click event of the yes button
+                    //activate the click event of the yes button
                     goHomeDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
                 }
             }
@@ -443,7 +557,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         @Override
         protected void onFar()
         {
-            getHelpForProtocolItem();
+            finish();
         }
 
         @Override

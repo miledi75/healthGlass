@@ -48,6 +48,20 @@ public class PatientInfoActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        //initialize gestureControl
+        try
+        {
+            mGc = new MyGestureControl(this);
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
         //get the patientId from the ScanActivity intent
         Intent scanActivityIntent = getIntent();
         this.patientId = scanActivityIntent.getStringExtra("patientId");
@@ -167,6 +181,7 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
+        //deactivate voice
         try
         {
             if(mVc != null)
@@ -179,11 +194,27 @@ public class PatientInfoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
     public void onResume()
     {
+        //register voice
         try
         {
             if (mVc != null)
@@ -191,6 +222,20 @@ public class PatientInfoActivity extends AppCompatActivity
                 mVc.on();
             }
             super.onResume();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+            super.onPause();
         }
         catch(Exception e)
         {
@@ -214,9 +259,103 @@ public class PatientInfoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+            super.onPause();
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
     }
 
+    public void handleSelection()
+    {
+        //check if parameter button is selected/has focus
+        if(extraInfo.hasFocus())
+        {
+            extraInfo.callOnClick();
+            //displayVoiceCommand(this.command);
+        }
+        else //call the onitemClickListener of the selected item
+        {
+            protocolList.performItemClick(protocolList.getSelectedView(),protocolList.getSelectedItemPosition(),protocolList.getSelectedItemId());
+        }
+    }
+    public void moveDown()
+    {
+        //variables for item postition in the listview
+        int numberOfItems;
+        int itemPosition;
+        //get the total number of items in the list
+        numberOfItems = protocolList.getCount();
+        //get the position of the selected item
+        itemPosition = protocolList.getSelectedItemPosition();
 
+
+        //check if the selected item is the last one in the list
+        if(itemPosition == numberOfItems-1)
+        {
+            //move to the first item
+            protocolList.setSelection(0);
+            protocolList.setItemChecked(0,true);
+            //Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            //move to the next item
+            protocolList.setSelection(itemPosition+1);
+            protocolList.setItemChecked(itemPosition+1,true);
+            //Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void moveUp()
+    {
+        //variables for item postition in the listview
+        int numberOfItems;
+        int itemPosition;
+        //get the total number of items in the list
+        numberOfItems = protocolList.getCount();
+        //get the position of the selected item
+        itemPosition = protocolList.getSelectedItemPosition();
+
+        //check if the selected item is the first one in the list
+        if(itemPosition == 0)
+        {
+            //move to the last item
+            protocolList.setSelection(numberOfItems-1);
+            protocolList.setItemChecked(numberOfItems-1,true);
+            Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            //move to the previous item
+            protocolList.setSelection(itemPosition-1);
+            protocolList.setItemChecked(itemPosition-1,true);
+            Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+        }
+    }
+    public void moveLeft()
+    {
+        protocolList.requestFocus();
+        protocolList.setItemChecked(0,true);
+    }
+    public void moveRight()
+    {
+        extraInfo.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+        extraInfo.setFocusableInTouchMode(true);
+        extraInfo.requestFocus();
+        extraInfo.setSelected(true);
+        extraInfo.setSelected(false);
+    }
     //Vuzix voice control class
 
     public class MyVoiceControl extends VoiceControl
@@ -245,7 +384,8 @@ public class PatientInfoActivity extends AppCompatActivity
             //displayVoiceCommand(this.command);
             if(this.command.equals("select"))
             {
-                //check if parameter button is selected/has focus
+                handleSelection();
+                /*check if parameter button is selected/has focus
                 if(extraInfo.hasFocus())
                 {
                     extraInfo.callOnClick();
@@ -255,12 +395,13 @@ public class PatientInfoActivity extends AppCompatActivity
                 {
                     protocolList.performItemClick(protocolList.getSelectedView(),protocolList.getSelectedItemPosition(),protocolList.getSelectedItemId());
                     displayVoiceCommand(this.command);
-                }
+                }*/
             }
             //handle movements up and down in the list
             if(this.command.equals("go down"))
             {
-                //check if the selected item is the last one in the list
+                moveDown();
+                /*check if the selected item is the last one in the list
                 if(itemPosition == numberOfItems-1)
                 {
                     //move to the first item
@@ -276,11 +417,12 @@ public class PatientInfoActivity extends AppCompatActivity
                     protocolList.setItemChecked(itemPosition+1,true);
                     displayVoiceCommand(this.command);
                     Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
             if(this.command.equals("go up"))
             {
-                //check if the selected item is the first one in the list
+                moveUp();
+                /*check if the selected item is the first one in the list
                 if(itemPosition == 0)
                 {
                     //move to the last item
@@ -296,24 +438,26 @@ public class PatientInfoActivity extends AppCompatActivity
                     protocolList.setItemChecked(itemPosition-1,true);
                     displayVoiceCommand(this.command);
                     Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
-                }
+                }*/
             }
             //detect right movement to select button for extra patient parameters
             if(this.command.equals("go right"))
             {
-                displayVoiceCommand(this.command);
+                /*displayVoiceCommand(this.command);
                 extraInfo.playSoundEffect(android.view.SoundEffectConstants.CLICK);
                 extraInfo.setFocusableInTouchMode(true);
                 extraInfo.requestFocus();
                 extraInfo.setSelected(true);
                 //extraInfo.callOnClick();
-                extraInfo.setSelected(false);
+                extraInfo.setSelected(false);*/
+                moveRight();
 
             }
             if(this.command.equals("go left"))
             {
-                protocolList.requestFocus();
-                protocolList.setItemChecked(0,true);
+                /*protocolList.requestFocus();
+                protocolList.setItemChecked(0,true);*/
+                moveLeft();
             }
 
 
@@ -339,25 +483,26 @@ public class PatientInfoActivity extends AppCompatActivity
         @Override
         protected void onBackSwipe(int i)
         {
-
+            //@todo check how to implement moveleft and moveright
+            moveUp();
         }
 
         @Override
         protected void onForwardSwipe(int i)
         {
-
+            moveDown();
         }
 
         @Override
         protected void onNear()
         {
-
+            handleSelection();
         }
 
         @Override
         protected void onFar()
         {
-
+            finish();
         }
 
         @Override
