@@ -1,14 +1,16 @@
 package com.example.mileto.healthglass;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckedTextView;
+
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,6 +27,8 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     private String              patientIdFromBarcode;
     private String              protocolId;
     private int                 numberOfProtocolItems;
+    private AlertDialog.Builder goHomeDilaogBuilder;
+    private AlertDialog         goHomeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -173,6 +177,41 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * takes user back to homepage
+     */
+    private void goHome()
+    {
+        //present a dialog to query user
+        //build a user dialog
+        goHomeDilaogBuilder = new AlertDialog.Builder(this);
+        goHomeDilaogBuilder.setMessage("Go to scan page?");
+        //positive clicklistener
+        goHomeDilaogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                //go back to the home page
+                Intent in = new Intent(getApplicationContext(),ScanActivity.class);
+            }
+        });
+
+        //negative clickListener
+        goHomeDilaogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        //create the dialog and show it
+        goHomeDialog = goHomeDilaogBuilder.create();
+        goHomeDialog.show();
+    }
+
     //INNER CLASSESS
     //inner class myvoicecontrol
     public class MyVoiceControl extends VoiceControl
@@ -209,6 +248,20 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             if(this.command.equals("go up"))
             {
                 moveUp();
+            }
+            if(this.command.equals("stop"))
+            {
+                //call the dialog to query user to go home
+                goHome();
+                if(this.command.equals("cancel"))
+                {
+                    goHomeDialog.dismiss();
+                }
+                else if (this.command.equals("go"))
+                {
+                    //activiate the click event of the yes button
+                    goHomeDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+                }
             }
         }
 
