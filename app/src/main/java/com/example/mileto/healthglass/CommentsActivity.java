@@ -349,8 +349,6 @@ public class CommentsActivity extends AppCompatActivity
     }
 
 
-
-
     //inner class myvoicecontrol
     public class MyVoiceControl extends VoiceControl
     {

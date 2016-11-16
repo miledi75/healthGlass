@@ -1,5 +1,6 @@
 package com.example.mileto.healthglass;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -14,6 +15,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vuzix.hardware.GestureSensor;
+import com.vuzix.speech.Constants;
+import com.vuzix.speech.VoiceControl;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,12 +28,15 @@ public class ListenCommentActivity extends AppCompatActivity
 {
 
     private String          fileNameComment;
-    private Button          listenComment;
-    private Button          deleteComment;
+    private Button          buttonListenComment;
+    private Button          buttonDeleteComment;
     private TextView        textviewComment;
     private MediaPlayer     myMediaPlayer;
     private String          commentPath;
     private Uri             commentUri;
+    //voice and gesture
+    private VoiceControl    mVc;
+    private GestureSensor   mGc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,11 +44,43 @@ public class ListenCommentActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listen_comment);
 
+        //initialize voice and gestureSensor
+        //activate voiceControl
+        try
+        {
+            mVc = new MyVoiceControl(this);
+            if(mVc != null)
+            {
+                //add media grammar
+                mVc.addGrammar(Constants.GRAMMAR_MEDIA);
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        //activate gestureSensor
+        try
+        {
+            mGc = new MyGestureControl(this);
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+
         //initialize buttons
-        listenComment       = (Button)      findViewById(R.id.buttonListenComment);
-        deleteComment       = (Button)      findViewById(R.id.buttonDeleteComment);
+        buttonListenComment = (Button)      findViewById(R.id.buttonListenComment);
+        buttonDeleteComment = (Button)      findViewById(R.id.buttonDeleteComment);
         //Disable the listenButton until the mediaPlayer is ready
-        //listenComment.setEnabled(false);
+        //buttonListenComment.setEnabled(false);
         //initialize textview
         textviewComment     = (TextView)    findViewById(R.id.textviewPlayComment);
 
@@ -56,7 +96,7 @@ public class ListenCommentActivity extends AppCompatActivity
         File commentFile    = new File(commentPath);
 
         //set the onclickListener for the buttons
-        listenComment.setOnClickListener(new View.OnClickListener()
+        buttonListenComment.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -84,7 +124,7 @@ public class ListenCommentActivity extends AppCompatActivity
             }
         });
 
-        deleteComment.setOnClickListener(new View.OnClickListener()
+        buttonDeleteComment.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -132,7 +172,7 @@ public class ListenCommentActivity extends AppCompatActivity
                 public void onCompletion(MediaPlayer mp)
                 {
                     textviewComment.setText(fileNameComment);
-                    listenComment.setText("Listen");
+                    buttonListenComment.setText("Listen");
                     myMediaPlayer.release();
                     myMediaPlayer = null;
                 }
@@ -201,4 +241,234 @@ public class ListenCommentActivity extends AppCompatActivity
         AlertDialog deletePictureDialog = deleteCommentDialogBuilder.create();
         deletePictureDialog.show();
     }
+
+    /**
+     * handle voice and gesture selection
+     */
+    private void handleSelection()
+    {
+        //check which button has the focus
+        if(buttonListenComment.hasFocus())
+        {
+            buttonListenComment.performClick();
+        }
+        else
+        {
+            buttonDeleteComment.performClick();
+        }
+    }
+
+
+    private void toggle()
+    {
+        if(buttonListenComment.hasFocus())
+        {
+            buttonDeleteComment.requestFocus();
+        }
+        else
+        {
+            buttonListenComment.requestFocus();
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        //activate voicecontrol
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gestureControl
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //inner class myvoicecontrol
+    public class MyVoiceControl extends VoiceControl
+    {
+        private String command;
+        private Context activityContext;
+
+        public MyVoiceControl(Context context)
+        {
+            super(context);
+            this.activityContext = context;
+        }
+
+
+        protected void onRecognition(String result)
+        {
+            this.command = result;
+            if(this.command.equals("select"))
+            {
+                handleSelection();
+            }
+
+            if(this.command.equals("stop"))
+            {
+                //go back to vuzix home screen
+                finish();
+            }
+
+            if(this.command.equals("go down"))
+            {
+                toggle();
+            }
+
+            if(this.command.equals("go up"))
+            {
+                toggle();
+            }
+
+            if(this.command.equals("play"))
+            {
+                if(myMediaPlayer == null)
+                {
+                    startPlayer();
+                }
+                else
+                {
+                    continuePlayer();
+                }
+            }
+            if(this.command.equals("pause"))
+            {
+                pausePlayer();
+            }
+            if(this.command.equals("stop"))
+            {
+                finish();
+            }
+
+        }
+
+        @Override
+        public String toString()
+        {
+            return command;
+        }
+    }
+
+    //end of Vuzix voice control class
+
+    //inner class myGestureControl
+    public class MyGestureControl extends GestureSensor
+    {
+
+        public MyGestureControl(Context context)
+        {
+            super(context);
+        }
+
+        @Override
+        protected void onBackSwipe(int i)
+        {
+            toggle();
+        }
+
+        @Override
+        protected void onForwardSwipe(int i)
+        {
+            toggle();
+        }
+
+        @Override
+        protected void onNear()
+        {
+            handleSelection();
+        }
+
+        @Override
+        protected void onFar()
+        {
+            finish();
+        }
+
+    }
+
+
+
+    //end inner class myGestureControl
 }
