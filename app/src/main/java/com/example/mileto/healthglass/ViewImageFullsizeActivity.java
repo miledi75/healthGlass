@@ -247,6 +247,100 @@ public class ViewImageFullsizeActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        //activate voicecontrol
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gestureControl
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
     //INNER CLASSESS
     //inner class myvoicecontrol
     public class MyVoiceControl extends VoiceControl
