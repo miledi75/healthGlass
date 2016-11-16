@@ -1,5 +1,6 @@
 package com.example.mileto.healthglass;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.CountDownTimer;
@@ -11,6 +12,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.vuzix.hardware.GestureSensor;
+import com.vuzix.speech.Constants;
+import com.vuzix.speech.VoiceControl;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -19,7 +24,7 @@ import java.util.Date;
 
 public class RecordCommentActivity extends AppCompatActivity
 {
-    private Button          toggleRecording;
+    private Button          buttonToggleRecording;
     private MediaRecorder   myMediarecorder;
     private CountDownTimer  myCountDownTimer;
     private TextView        recorderTextview;
@@ -28,14 +33,48 @@ public class RecordCommentActivity extends AppCompatActivity
     private String          protocolID;
     static  String          DIRECTORY_NAME="/recordings";
 
+    private VoiceControl    mVc;
+    private GestureSensor   mGc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record_comment);
 
+        //initialize voice and gestureSensor
+        //activate voiceControl
+        try
+        {
+            mVc = new MyVoiceControl(this);
+            if(mVc != null)
+            {
+                //add media grammar
+                mVc.addGrammar(Constants.GRAMMAR_MEDIA);
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
-        toggleRecording     = (Button)      findViewById(R.id.buttonAddRecording);
+        //activate gestureSensor
+        try
+        {
+            mGc = new MyGestureControl(this);
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        //initialize UI elements
+        buttonToggleRecording = (Button)      findViewById(R.id.buttonAddRecording);
         recorderTextview    = (TextView)    findViewById(R.id.textviewRecorderCounter);
 
 
@@ -44,12 +83,11 @@ public class RecordCommentActivity extends AppCompatActivity
         patientID               = fromProtocolToDo.getStringExtra("patientID");
         protocolID              = fromProtocolToDo.getStringExtra("protocolID");
         //build the path to save the recording
-        //@Todo change the directory pictures to directory documents later
-        recordingPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+patientID+"/"+this.protocolID;
+        recordingPath = getExternalFilesDir(Environment.DIRECTORY_MUSIC)+ DIRECTORY_NAME+"/"+patientID+"/"+this.protocolID;
         Log.d("FULLRECORDERPATH:",getFileForRecording().toString());
 
         //set the clicklistener for the recorder toggle Button
-        toggleRecording.setOnClickListener(new View.OnClickListener()
+        buttonToggleRecording.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -153,5 +191,100 @@ public class RecordCommentActivity extends AppCompatActivity
             }
         }.start();
     }
+
+    private void handleSelection()
+    {
+        buttonToggleRecording.performClick();
+    }
+
+    //inner class myvoicecontrol
+    public class MyVoiceControl extends VoiceControl
+    {
+        private String command;
+        private Context activityContext;
+
+        public MyVoiceControl(Context context)
+        {
+            super(context);
+            this.activityContext = context;
+        }
+
+
+        protected void onRecognition(String result)
+        {
+            this.command = result;
+            if(this.command.equals("select"))
+            {
+                handleSelection();
+            }
+
+            if(this.command.equals("record"))
+            {
+                startRecording();
+            }
+
+            if(this.command.equals("end"))
+            {
+                stopRecording();
+            }
+
+
+
+            if(this.command.equals("stop"))
+            {
+                finish();
+            }
+
+        }
+
+        @Override
+        public String toString()
+        {
+            return command;
+        }
+    }
+
+
+
+    //end of Vuzix voice control class
+
+    //inner class myGestureControl
+    public class MyGestureControl extends GestureSensor
+    {
+
+        public MyGestureControl(Context context)
+        {
+            super(context);
+        }
+
+        @Override
+        protected void onBackSwipe(int i)
+        {
+
+        }
+
+        @Override
+        protected void onForwardSwipe(int i)
+        {
+
+        }
+
+        @Override
+        protected void onNear()
+        {
+            handleSelection();
+        }
+
+        @Override
+        protected void onFar()
+        {
+            finish();
+        }
+
+    }
+
+
+
+    //end inner class myGestureControl
 
 }
