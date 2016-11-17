@@ -364,6 +364,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
+        super.onPause();
         //deactivate voice
         try
         {
@@ -371,7 +372,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             {
                 mVc.off();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -385,7 +385,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             {
                 mGc.unregister();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -397,6 +396,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     @Override
     public void onResume()
     {
+        super.onResume();
         //register voice
         try
         {
@@ -404,7 +404,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             {
                 mVc.on();
             }
-            super.onResume();
         }
         catch(Exception e)
         {
@@ -418,7 +417,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             {
                 mGc.register();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -429,6 +427,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
         try
         {
             if(mVc != null)
@@ -436,7 +435,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
                 mVc.off();
                 mVc = null;
             }
-            super.onDestroy();
         }
         catch(Exception e)
         {
