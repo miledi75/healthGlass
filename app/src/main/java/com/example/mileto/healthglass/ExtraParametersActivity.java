@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+
 
 //import com.vuzix.hardware.GestureSensor;
 //import com.vuzix.speech.VoiceControl;
@@ -22,12 +24,15 @@ import java.util.ArrayList;
 public class ExtraParametersActivity extends Activity
 {
 
-    private String patientId;
-    private ListView extraParameterList;
-    private MyVoiceControl mVc;
-    private GestureSensor mGc;
-    private Button closeButton;
+    private String          patientId;
+    private ListView        extraParameterList;
+    private ImageView       patientPictureImageView;
+    private MyVoiceControl  mVc;
+    private GestureSensor   mGc;
+    private Button          closeButton;
+
     ArrayList<ExtraParameter> parameters;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,24 +44,14 @@ public class ExtraParametersActivity extends Activity
         Intent intent = getIntent();
         patientId = intent.getStringExtra("patientId");
 
-        //@todo call the REST service for the extra parameters using the patientId
+        //@todo: call the REST service for the extra parameters using the patientId
+        //@todo: call the rest api to get patient picture
 
         //initialize UI elements
-        extraParameterList  = (ListView)    findViewById(R.id.extraParametersListview);
-        closeButton         = (Button)      findViewById(R.id.extraParametersBackButton);
+        extraParameterList      = (ListView)    findViewById(R.id.extraParametersListview);
+        closeButton             = (Button)      findViewById(R.id.extraParametersBackButton);
+        patientPictureImageView = (ImageView)   findViewById(R.id.patientPictureImageView);
 
-        //fill the parameter arrayList
-
-        /**
-         *
-         ID
-         Geboortedatum (eerste drie worden meestel gebruikt om een patiënt te kunnen identificeren)
-         Reden van opname
-         Kamernummer
-         NTR-code (niet te reanimeren)
-         bloedruk (laatste gemeten), hartslag (laatste gemeten), temperatuur (laatst gemeten), ademhalingsfrequentie (laatst gemeten), gewicht (laatst gemeten) en lengte
-
-         */
 
         //set the datasource
         parameters = new ArrayList<ExtraParameter>();
@@ -137,6 +132,67 @@ public class ExtraParametersActivity extends Activity
             }
         });
 
+    }
+
+
+    //navigation methods for the voicecontrol class and the GestureControl class
+    private void handleSelection()
+    {
+        //if button is selected call clickevent
+        if(closeButton.hasFocus())
+        {
+            closeButton.performClick();
+        }
+        else if(extraParameterList.hasFocus())
+        {
+            //@todo: implement extra information window for each parameter
+        }
+    }
+
+    private void moveUp()
+    {
+        //if button is selected, move to last item in list
+        if(closeButton.hasFocus())
+        {
+            //go to last item in list
+            extraParameterList.requestFocus();
+            extraParameterList.setSelection(extraParameterList.getCount()-1);
+        }
+        else if(extraParameterList.hasFocus())
+        {
+            //if first item in list is selected, move to closeButton
+            if(extraParameterList.getSelectedItemPosition() == 0)
+            {
+                closeButton.requestFocus();
+            }
+            else//move to previous item in list
+            {
+                extraParameterList.setSelection(extraParameterList.getSelectedItemPosition()-1);
+            }
+        }
+    }
+
+    private void moveDown()
+    {
+        //if button is selected, move to first item in list
+        if(closeButton.hasFocus())
+        {
+            //go to first item in list
+            extraParameterList.requestFocus();
+            extraParameterList.setSelection(0);
+        }
+        else if(extraParameterList.hasFocus())
+        {
+            //if last item in list is selected, move to closeButton
+            if(extraParameterList.getSelectedItemPosition() == extraParameterList.getCount()-1)
+            {
+                closeButton.requestFocus();
+            }
+            else//move to next item in list
+            {
+                extraParameterList.setSelection(extraParameterList.getSelectedItemPosition()+1);
+            }
+        }
     }
 
 
