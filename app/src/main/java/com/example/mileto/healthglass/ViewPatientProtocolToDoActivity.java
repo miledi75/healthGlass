@@ -97,9 +97,9 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         //Attach the adapter to the listview
         protocolItemsListview.setAdapter(protocolItemsAdapter);
         //Create testData and add to adapter to update view
-        PatientProtocolItem protocolItem1 = new PatientProtocolItem("remove bandage",false,1);
-        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Clean and desinfect",false,2);
-        PatientProtocolItem protocolItem3 = new PatientProtocolItem("renew bandage",false,3);
+        PatientProtocolItem protocolItem1 = new PatientProtocolItem("tBasisprocedure (DAV)",false,1);
+        PatientProtocolItem protocolItem2 = new PatientProtocolItem("Opnemen staal wondvocht voor cultuur",false,2);
+        PatientProtocolItem protocolItem3 = new PatientProtocolItem("tPeilen van wonde",false,3);
 
         //update the adapter
         protocolItemsAdapter.add(protocolItem1);
