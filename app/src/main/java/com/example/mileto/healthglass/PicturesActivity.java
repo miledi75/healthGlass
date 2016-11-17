@@ -1,9 +1,12 @@
 package com.example.mileto.healthglass;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +14,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.Toast;
+
+import com.vuzix.hardware.GestureSensor;
+import com.vuzix.speech.VoiceControl;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -26,7 +33,7 @@ public class PicturesActivity extends AppCompatActivity
 
     private static final int    REQUEST_IMAGE_CAPTURE = 20;
     private static final String DIRECTORY_NAME="/woundCare";
-    private Button              AddimagesButton;
+    private Button              addImagesButton;
     private GridView            imageGridView;
     private String              imagesDirectoryPath;
     private Uri                 imageUri;
@@ -34,11 +41,61 @@ public class PicturesActivity extends AppCompatActivity
     private String              patientIdFromBarcode;
     private String              protocolId;
 
+    private AlertDialog.Builder goHomeDilaogBuilder;
+    private AlertDialog         goHomeDialog;
+
+
+    //VoiceControl and GestureControl
+    private VoiceControl    mVc;
+    private GestureSensor   mGc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pictures);
+
+        //Voicecontrol and gesturecontrol
+        //activate voice control
+        try
+        {
+            mVc = new MyVoiceControl(getApplicationContext());
+            if(mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_LONG);
+        }
+
+        //activate gestureControl
+        //check if gesturesensor is on
+        if(GestureSensor.isOn())
+        {
+            try
+            {
+                mGc = new MyGestureControl(getApplicationContext());
+                if (mGc == null) {
+                    Toast.makeText(this, "Cannot create gestureSensor", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    //activate gesturesensor
+                    mGc.register();
+                }
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //GestureSensor.On();
+        }
 
         //get the protocolId from the PatientInfoActivity Intent
         Intent fromProtocolActivity         = getIntent();
@@ -49,7 +106,7 @@ public class PicturesActivity extends AppCompatActivity
         imagesDirectoryPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+this.patientIdFromBarcode+"/"+this.protocolId;
         Log.d("imageDirectory:","Path:"+imagesDirectoryPath);
         //initialize UI elements
-        AddimagesButton = (Button) findViewById(R.id.buttonAddPicture);
+        addImagesButton = (Button) findViewById(R.id.buttonAddPicture);
 
         imageGridView           = (GridView) findViewById(R.id.imagesGriedViewToDo);
 
@@ -57,11 +114,11 @@ public class PicturesActivity extends AppCompatActivity
         if(fromProtocolActivity.getStringExtra("performed") != null)
         {
             //disable/hide the add image button
-            AddimagesButton.setVisibility(View.INVISIBLE);
+            addImagesButton.setVisibility(View.INVISIBLE);
         }
 
         //onclicklistener for the picturebutton
-        AddimagesButton.setOnClickListener(new View.OnClickListener()
+        addImagesButton.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
@@ -218,10 +275,319 @@ public class PicturesActivity extends AppCompatActivity
         return mediaFile;
     }
 
+
+    private void moveDown()
+    {
+        //if button is selected, go to the imagesGridView
+        if(addImagesButton.hasFocus())
+        {
+            imageGridView.requestFocus();
+            //select first item
+            imageGridView.setSelection(0);
+        }
+        else if(imageGridView.hasFocus())
+        {
+            //get the selected item position
+            int position = imageGridView.getSelectedItemPosition();
+            //if the last item is selected, move to the button
+            if(position == imageGridView.getCount()-1)
+            {
+                addImagesButton.requestFocus();
+            }
+            else
+            {
+                //select next item
+                imageGridView.setSelection(position+1);
+            }
+        }
+    }
+
+    private void moveUp()
+    {
+        //if button is selected, move to the last item of the gridview
+        if(addImagesButton.hasFocus())
+        {
+            imageGridView.requestFocus();
+            //move to the last item
+            imageGridView.setSelection(imageGridView.getCount()-1);
+        }
+        else if(imageGridView.hasFocus())
+        {
+            //get the position of the selected item
+            int position = imageGridView.getSelectedItemPosition();
+            //if first item is selected, move to the button
+            if(position == 0)
+            {
+                addImagesButton.hasFocus();
+            }
+            else
+            {
+                //go to previous item
+                imageGridView.setSelection(position - 1);
+            }
+
+        }
+    }
+
+    private void handleSelection()
+    {
+        //check if buttin is selected
+        if(addImagesButton.hasFocus())
+        {
+            addImagesButton.performClick();
+        }
+        else if(imageGridView.hasFocus())
+        {
+            //get position of selected item
+            int position = imageGridView.getSelectedItemPosition();
+            //call itemClick of selected item
+            imageGridView.performItemClick(imageGridView.getChildAt(position),position,imageGridView.getItemIdAtPosition(position));
+        }
+    }
+
+    private void goHome()
+    {
+        //present a dialog to query user
+        //build a user dialog
+        goHomeDilaogBuilder = new AlertDialog.Builder(this);
+        goHomeDilaogBuilder.setMessage("Go to scan page?");
+        //positive clicklistener
+        goHomeDilaogBuilder.setPositiveButton("yes", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                //go back to the home page
+                Intent in = new Intent(getApplicationContext(),ScanActivity.class);
+                startActivity(in);
+            }
+        });
+
+        //negative clickListener
+        goHomeDilaogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        //create the dialog and show it
+        goHomeDialog = goHomeDilaogBuilder.create();
+        goHomeDialog.show();
+    }
+
     @Override
     public void onResume()
     {
         super.onResume();
         loadGridviewWithImages();
+        //register voice
+        try
+        {
+            if (mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
     }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        //deactivate voice
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //INNER CLASSESS
+    //inner class myvoicecontrol
+    public class MyVoiceControl extends VoiceControl
+    {
+        private String command;
+        private Context activityContext;
+
+        public MyVoiceControl(Context context)
+        {
+            super(context);
+            this.activityContext = context;
+        }
+
+
+        protected void onRecognition(String result)
+        {
+            this.command = result;
+            if(this.command.equals("select"))
+            {
+                handleSelection();
+            }
+
+            if(this.command.equals("stop"))
+            {
+                //call the dialog to query user to go home
+                goHome();
+            }
+
+            if(this.command.equals("cancel"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
+                {
+                    goHomeDialog.dismiss();
+                }
+
+            }
+            if (this.command.equals("go"))
+            {
+                //check if dialog is activated
+                if (goHomeDialog.isShowing())
+                {
+                    //activate the click event of the yes button
+                    goHomeDialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+                }
+            }
+
+            if(this.command.equals("go back"))
+            {
+                finish();
+            }
+
+            if(this.command.equals("go up"))
+            {
+                moveUp();
+            }
+            if(this.command.equals("go down"))
+            {
+                moveDown();
+            }
+        }
+        @Override
+        public String toString()
+        {
+            return command;
+        }
+    }
+
+
+
+
+    //end of Vuzix voice control class
+
+    //inner class myGestureControl
+    public class MyGestureControl extends GestureSensor
+    {
+
+        public MyGestureControl(Context context)
+        {
+            super(context);
+        }
+
+        @Override
+        protected void onBackSwipe(int i)
+        {
+            moveUp();
+        }
+
+        @Override
+        protected void onForwardSwipe(int i)
+        {
+            moveDown();
+        }
+
+        @Override
+        protected void onNear()
+        {
+            handleSelection();
+        }
+
+        @Override
+        protected void onFar()
+        {
+            finish();
+        }
+
+        @Override
+        public String toString()
+        {
+            return super.toString();
+        }
+    }
+
+    //end inner class myGestureControl
 }
