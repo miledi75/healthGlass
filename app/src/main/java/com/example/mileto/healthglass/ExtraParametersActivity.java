@@ -297,7 +297,8 @@ public class ExtraParametersActivity extends Activity
         }
 
         @Override
-        protected void onFar() {
+        protected void onFar()
+        {
 
         }
     }
