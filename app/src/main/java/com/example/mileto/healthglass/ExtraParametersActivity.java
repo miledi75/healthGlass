@@ -144,6 +144,7 @@ public class ExtraParametersActivity extends Activity
     @Override
     public void onPause()
     {
+        super.onPause();
         //disactivate voice control
         try
         {
@@ -151,7 +152,6 @@ public class ExtraParametersActivity extends Activity
             {
                 mVc.off();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -165,7 +165,6 @@ public class ExtraParametersActivity extends Activity
             {
                 mGc.unregister();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -177,6 +176,7 @@ public class ExtraParametersActivity extends Activity
     @Override
     public void onResume()
     {
+        super.onResume();
         //activate voice control
         try
         {
@@ -184,7 +184,6 @@ public class ExtraParametersActivity extends Activity
             {
                 mVc.on();
             }
-            super.onResume();
         }
         catch(Exception e)
         {
@@ -198,13 +197,47 @@ public class ExtraParametersActivity extends Activity
             {
                 mGc.register();
             }
-            super.onResume();
         }
         catch(Exception e)
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
         }
     }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        //disactivate voice control
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+        }
+
+        //disactivate gestureControl
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+        }
+    }
+
+
 
 
     //inner class myvoicecontrol
@@ -247,20 +280,6 @@ public class ExtraParametersActivity extends Activity
             super(context);
         }
 
-        @Override
-        protected void onUp(int i) {
-            super.onUp(i);
-        }
-
-        @Override
-        protected void onDown(int i) {
-            super.onDown(i);
-        }
-
-        @Override
-        protected void onSensorBlocked(boolean b) {
-            super.onSensorBlocked(b);
-        }
 
         @Override
         protected void onBackSwipe(int i) {

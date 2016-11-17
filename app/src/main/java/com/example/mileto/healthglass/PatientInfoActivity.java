@@ -181,6 +181,7 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
+        super.onPause();
         //deactivate voice
         try
         {
@@ -188,7 +189,6 @@ public class PatientInfoActivity extends AppCompatActivity
             {
                 mVc.off();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -202,8 +202,7 @@ public class PatientInfoActivity extends AppCompatActivity
             {
                 mGc.unregister();
             }
-            super.onPause();
-        }
+       }
         catch(Exception e)
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
@@ -214,6 +213,7 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onResume()
     {
+        super.onResume();
         //register voice
         try
         {
@@ -221,7 +221,6 @@ public class PatientInfoActivity extends AppCompatActivity
             {
                 mVc.on();
             }
-            super.onResume();
         }
         catch(Exception e)
         {
@@ -235,7 +234,6 @@ public class PatientInfoActivity extends AppCompatActivity
             {
                 mGc.register();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -246,6 +244,8 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
+        //deactivate voiceControl
         try
         {
             if(mVc != null)
@@ -253,14 +253,13 @@ public class PatientInfoActivity extends AppCompatActivity
                 mVc.off();
                 mVc = null;
             }
-            super.onDestroy();
         }
         catch(Exception e)
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
-        //unregister gesture
+        //unregister gestureControl
         try
         {
             if(mGc != null)
@@ -268,7 +267,6 @@ public class PatientInfoActivity extends AppCompatActivity
                 mGc.unregister();
                 mGc = null;
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -281,7 +279,7 @@ public class PatientInfoActivity extends AppCompatActivity
         //check if parameter button is selected/has focus
         if(extraInfo.hasFocus())
         {
-            extraInfo.callOnClick();
+            extraInfo.performClick();
             //displayVoiceCommand(this.command);
         }
         else //call the onitemClickListener of the selected item

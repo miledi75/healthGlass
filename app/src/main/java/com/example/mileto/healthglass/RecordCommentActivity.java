@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.vuzix.hardware.GestureSensor;
 import com.vuzix.speech.Constants;
@@ -244,7 +245,103 @@ public class RecordCommentActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onResume()
+    {
+        super.onResume();
 
+        //register voice
+        try
+        {
+            if (mVc != null)
+            {
+                mVc.on();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //register gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.register();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        //deactivate voice
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        try
+        {
+            if(mVc != null)
+            {
+                mVc.off();
+                mVc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        //unregister gesture
+        try
+        {
+            if(mGc != null)
+            {
+                mGc.unregister();
+                mGc = null;
+            }
+        }
+        catch(Exception e)
+        {
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+    }
 
     //end of Vuzix voice control class
 

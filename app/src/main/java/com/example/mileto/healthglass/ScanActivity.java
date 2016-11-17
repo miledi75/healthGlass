@@ -97,6 +97,7 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onResume()
     {
+        super.onResume();
         //activate voice control
         try
         {
@@ -104,7 +105,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 mVC.on();
             }
-            super.onResume();
         }
         catch(Exception e)
         {
@@ -118,7 +118,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 //GestureSensor.On();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -131,6 +130,7 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
         //disactivate voicecontrol
         try
         {
@@ -138,7 +138,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 mVC.off();
             }
-            super.onDestroy();
         }
         catch(Exception e)
         {
@@ -152,7 +151,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 mGc.unregister();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -214,6 +212,7 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
+        super.onPause();
         //disactivate voice control
         try
         {
@@ -221,7 +220,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 mVC.off();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
@@ -235,7 +233,6 @@ public class ScanActivity extends AppCompatActivity
             {
                 mGc.unregister();
             }
-            super.onPause();
         }
         catch(Exception e)
         {
