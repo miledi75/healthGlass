@@ -1,6 +1,8 @@
 package com.example.mileto.healthglass;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,8 @@ public class ExtraParameterAdapter extends ArrayAdapter<ExtraParameter>
         //populate the data
         extraParameterName.setText(extraParameter.getParameter_name());
         extraParameterValue.setText(extraParameter.getParameter_value());
+        extraParameterName.setTextColor(Color.BLACK);
+        extraParameterValue.setTextColor(Color.BLACK);
 
         //return the view to render on the screen
 

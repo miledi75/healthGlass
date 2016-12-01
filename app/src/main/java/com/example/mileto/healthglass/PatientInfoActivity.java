@@ -3,6 +3,7 @@ package com.example.mileto.healthglass;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.speech.srec.Recognizer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 
 import com.vuzix.hardware.GestureSensor;
+import com.vuzix.speech.Constants;
 import com.vuzix.speech.VoiceControl;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class PatientInfoActivity extends AppCompatActivity
         private ListView protocolList;
         private MyVoiceControl mVc;
         private MyGestureControl mGc;
-        private Button extraInfo;
+        private Button extraInfoButton;
 
 
     @Override
@@ -40,6 +42,7 @@ public class PatientInfoActivity extends AppCompatActivity
             mVc = new MyVoiceControl(getApplicationContext());
             if(mVc != null)
             {
+                mVc.addGrammar(Constants.GRAMMAR_WAREHOUSE);
                 mVc.on();
             }
         }
@@ -68,8 +71,8 @@ public class PatientInfoActivity extends AppCompatActivity
         //Toast patientIdMessage = Toast.makeText(this,this.patientId,Toast.LENGTH_SHORT);
         //patientIdMessage.show();
 
-        //initialize button for extraInfo
-        extraInfo = (Button) findViewById(R.id.extraParametersButton);
+        //initialize button for extraInfoButton
+        extraInfoButton = (Button) findViewById(R.id.extraParametersButton);
 
         //initialize listview for protocols
         protocolList = (ListView) findViewById(R.id.protocolListView);
@@ -99,8 +102,8 @@ public class PatientInfoActivity extends AppCompatActivity
 
         protocolList.setItemChecked(0,true);
 
-        //set the clicklistener for the extraInfo button
-        extraInfo.setOnClickListener(new View.OnClickListener()
+        //set the clicklistener for the extraInfoButton button
+        extraInfoButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -181,12 +184,12 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
             if(mVc != null)
             {
+                Toast.makeText(getApplicationContext(),"Pausing voiceControl",Toast.LENGTH_SHORT).show();
                 mVc.off();
             }
         }
@@ -207,7 +210,7 @@ public class PatientInfoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
     @Override
@@ -219,6 +222,7 @@ public class PatientInfoActivity extends AppCompatActivity
         {
             if (mVc != null)
             {
+                Toast.makeText(getApplicationContext(),"Resuming voiceControl",Toast.LENGTH_SHORT).show();
                 mVc.on();
             }
         }
@@ -244,14 +248,13 @@ public class PatientInfoActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         //deactivate voiceControl
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                //Toast.makeText(getApplicationContext(),"Destroying voiceControl",Toast.LENGTH_SHORT).show();
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -272,14 +275,15 @@ public class PatientInfoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     public void handleSelection()
     {
         //check if parameter button is selected/has focus
-        if(extraInfo.hasFocus())
+        if(extraInfoButton.hasFocus())
         {
-            extraInfo.performClick();
+            extraInfoButton.performClick();
             //displayVoiceCommand(this.command);
         }
         else //call the onitemClickListener of the selected item
@@ -331,14 +335,14 @@ public class PatientInfoActivity extends AppCompatActivity
             //move to the last item
             protocolList.setSelection(numberOfItems-1);
             protocolList.setItemChecked(numberOfItems-1,true);
-            Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
         }
         else
         {
             //move to the previous item
             protocolList.setSelection(itemPosition-1);
             protocolList.setItemChecked(itemPosition-1,true);
-            Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(),Integer.toString(protocolList.getSelectedItemPosition()),Toast.LENGTH_SHORT).show();
         }
     }
     public void moveLeft()
@@ -348,11 +352,11 @@ public class PatientInfoActivity extends AppCompatActivity
     }
     public void moveRight()
     {
-        extraInfo.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-        extraInfo.setFocusableInTouchMode(true);
-        extraInfo.requestFocus();
-        extraInfo.setSelected(true);
-        extraInfo.setSelected(false);
+        extraInfoButton.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+        extraInfoButton.setFocusableInTouchMode(true);
+        extraInfoButton.requestFocus();
+        extraInfoButton.setSelected(true);
+        extraInfoButton.setSelected(false);
     }
     //Vuzix voice control class
 
@@ -384,9 +388,9 @@ public class PatientInfoActivity extends AppCompatActivity
             {
                 handleSelection();
                 /*check if parameter button is selected/has focus
-                if(extraInfo.hasFocus())
+                if(extraInfoButton.hasFocus())
                 {
-                    extraInfo.callOnClick();
+                    extraInfoButton.callOnClick();
                     //displayVoiceCommand(this.command);
                 }
                 else //call the onitemClickListener of the selected item
@@ -442,12 +446,12 @@ public class PatientInfoActivity extends AppCompatActivity
             if(this.command.equals("go right"))
             {
                 /*displayVoiceCommand(this.command);
-                extraInfo.playSoundEffect(android.view.SoundEffectConstants.CLICK);
-                extraInfo.setFocusableInTouchMode(true);
-                extraInfo.requestFocus();
-                extraInfo.setSelected(true);
-                //extraInfo.callOnClick();
-                extraInfo.setSelected(false);*/
+                extraInfoButton.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+                extraInfoButton.setFocusableInTouchMode(true);
+                extraInfoButton.requestFocus();
+                extraInfoButton.setSelected(true);
+                //extraInfoButton.callOnClick();
+                extraInfoButton.setSelected(false);*/
                 moveRight();
 
             }
@@ -456,6 +460,14 @@ public class PatientInfoActivity extends AppCompatActivity
                 /*protocolList.requestFocus();
                 protocolList.setItemChecked(0,true);*/
                 moveLeft();
+            }
+            if(this.command.equals("go Back"))
+            {
+                finish();
+            }
+            if(this.command.equals("load"))
+            {
+                extraInfoButton.performClick();
             }
 
 
@@ -482,25 +494,29 @@ public class PatientInfoActivity extends AppCompatActivity
         protected void onBackSwipe(int i)
         {
             //@todo check how to implement moveleft and moveright
-            moveUp();
+          //  moveUp();
+            Toast.makeText(getApplicationContext(),"OnbackSwipe",Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onForwardSwipe(int i)
         {
             moveDown();
+            Toast.makeText(getApplicationContext(),"OnForwardSwipe",Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onNear()
         {
             handleSelection();
+            Toast.makeText(getApplicationContext(),"OnNear",Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onFar()
         {
             finish();
+            Toast.makeText(getApplicationContext(),"OnFar",Toast.LENGTH_SHORT).show();
         }
 
         @Override

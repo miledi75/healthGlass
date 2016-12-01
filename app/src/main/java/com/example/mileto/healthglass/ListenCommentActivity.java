@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -149,7 +150,7 @@ public class ListenCommentActivity extends AppCompatActivity
         myMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try
         {
-            fs = new FileInputStream(commentFile);
+            //fs = new FileInputStream(commentFile);
             myMediaPlayer.setDataSource(commentUri.getPath());
 
             myMediaPlayer.prepare();
@@ -163,7 +164,8 @@ public class ListenCommentActivity extends AppCompatActivity
                     //play the comment
                     myMediaPlayer.setVolume(1.0f,1.0f);
                     myMediaPlayer.start();
-                    textviewComment.setText("Ready to play");
+                    textviewComment.setGravity(Gravity.CENTER);
+                    textviewComment.setText("Playing...");
                 }
             });
             myMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
@@ -305,7 +307,6 @@ public class ListenCommentActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         try
         {
             if(mVc != null)
@@ -330,19 +331,18 @@ public class ListenCommentActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onPause();
     }
 
 
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -363,6 +363,7 @@ public class ListenCommentActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     //inner class myvoicecontrol
@@ -417,7 +418,7 @@ public class ListenCommentActivity extends AppCompatActivity
             {
                 pausePlayer();
             }
-            if(this.command.equals("stop"))
+            if(this.command.equals("go back"))
             {
                 finish();
             }

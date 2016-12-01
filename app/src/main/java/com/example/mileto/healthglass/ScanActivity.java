@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class ScanActivity extends AppCompatActivity
                 else
                 {
                     //activate gesturesensor
-                    //GestureSensor.On();
+                    mGc.register();
                 }
             }
             catch(Exception e)
@@ -74,10 +75,10 @@ public class ScanActivity extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             try
             {
-                //GestureSensor.On();
+                //mGc.register();
             }
             catch(Exception e)
             {
@@ -89,7 +90,7 @@ public class ScanActivity extends AppCompatActivity
 
     public void displayVoiceCommand(String voiceCommand)
     {
-        Toast.makeText(this,voiceCommand,Toast.LENGTH_SHORT);
+        Toast.makeText(this,voiceCommand,Toast.LENGTH_SHORT).show();
 
     }
 
@@ -130,7 +131,6 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         //disactivate voicecontrol
         try
         {
@@ -141,7 +141,7 @@ public class ScanActivity extends AppCompatActivity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
         //disactivate gestureControl
@@ -154,20 +154,21 @@ public class ScanActivity extends AppCompatActivity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     public void HandleClick(View arg0)
     {
 
-        Intent patientInfoActivityIntent = new Intent(this,PatientInfoActivity.class);
+       // Intent patientInfoActivityIntent = new Intent(this,PatientInfoActivity.class);
         //add patientId info variable to intent
-        patientInfoActivityIntent.putExtra("patientId","3145891164206");
+       // patientInfoActivityIntent.putExtra("patientId","3145891164206");
         //call the patientInfoActivity
-        startActivity(patientInfoActivityIntent);
+       // startActivity(patientInfoActivityIntent);
         //UNCOMMENT TO ACTIVQTE SCANNER INTENT, COMMENTED FOR TESTING PURPOSES
-        /*Call the Zxing google scanner through intent
+        //Call the Zxing google scanner through intent
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 
         intent.putExtra("SCAN_MODE", "PRODUCT_MODE");
@@ -179,7 +180,7 @@ public class ScanActivity extends AppCompatActivity
         catch(Exception e)
         {
             Log.i(tag,e.getMessage());
-        }*/
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
@@ -212,7 +213,6 @@ public class ScanActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //disactivate voice control
         try
         {
@@ -223,7 +223,7 @@ public class ScanActivity extends AppCompatActivity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
         //disactivate gestureControl
@@ -236,8 +236,9 @@ public class ScanActivity extends AppCompatActivity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onPause();
     }
 
 
@@ -302,6 +303,7 @@ public class ScanActivity extends AppCompatActivity
         @Override
         protected void onNear()
         {
+            Toast.makeText(getApplicationContext(),"OnNear", Toast.LENGTH_LONG).show();
             handleSelection();
         }
 

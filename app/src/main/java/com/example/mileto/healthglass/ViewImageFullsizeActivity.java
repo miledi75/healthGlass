@@ -79,7 +79,7 @@ public class ViewImageFullsizeActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             //GestureSensor.On();
         }
 
@@ -281,7 +281,6 @@ public class ViewImageFullsizeActivity extends AppCompatActivity {
     @Override
     public void onPause()
     {
-        super.onPause();
         try
         {
             if(mVc != null)
@@ -306,19 +305,18 @@ public class ViewImageFullsizeActivity extends AppCompatActivity {
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onPause();
     }
 
 
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -339,6 +337,7 @@ public class ViewImageFullsizeActivity extends AppCompatActivity {
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     //INNER CLASSESS

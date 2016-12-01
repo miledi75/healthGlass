@@ -45,7 +45,7 @@ public class RecordCommentActivity extends AppCompatActivity
 
         //initialize voice and gestureSensor
         //activate voiceControl
-        try
+       /* try
         {
             mVc = new MyVoiceControl(this);
             if(mVc != null)
@@ -58,7 +58,7 @@ public class RecordCommentActivity extends AppCompatActivity
         catch(Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
 
         //activate gestureSensor
         try
@@ -119,6 +119,9 @@ public class RecordCommentActivity extends AppCompatActivity
     private void startRecording()
     {
 
+        //mVc.destroy();
+
+
         myMediarecorder = new MediaRecorder();
         myMediarecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         myMediarecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -143,6 +146,8 @@ public class RecordCommentActivity extends AppCompatActivity
         myMediarecorder.stop();
         myMediarecorder.release();
         myMediarecorder = null;
+
+        //mVc.on();
     }
 
     /**
@@ -280,7 +285,6 @@ public class RecordCommentActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
@@ -306,7 +310,7 @@ public class RecordCommentActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
 
@@ -314,13 +318,11 @@ public class RecordCommentActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -341,6 +343,7 @@ public class RecordCommentActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     //end of Vuzix voice control class

@@ -24,12 +24,12 @@ import java.util.ArrayList;
 public class ExtraParametersActivity extends Activity
 {
 
-    private String          patientId;
-    private ListView        extraParameterList;
-    private ImageView       patientPictureImageView;
-    private MyVoiceControl  mVc;
-    private GestureSensor   mGc;
-    private Button          closeButton;
+    private String              patientId;
+    private ListView            extraParameterList;
+    private ImageView           patientPictureImageView;
+    private MyVoiceControl      mVc;
+    private MyGestureControl    mGc;
+    private Button              closeButton;
 
     ArrayList<ExtraParameter> parameters;
 
@@ -100,11 +100,7 @@ public class ExtraParametersActivity extends Activity
             try
             {
                 mGc = new MyGestureControl(getApplicationContext());
-                if (mGc == null)
-                {
-                    Toast.makeText(this, "Cannot create gestureSensor", Toast.LENGTH_SHORT).show();
-                }
-                else
+                if(mGc != null)
                 {
                     //activate gesturesensor
                     mGc.register();
@@ -118,7 +114,7 @@ public class ExtraParametersActivity extends Activity
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
         }
 
 
@@ -200,7 +196,6 @@ public class ExtraParametersActivity extends Activity
     @Override
     public void onPause()
     {
-        super.onPause();
         //disactivate voice control
         try
         {
@@ -211,7 +206,7 @@ public class ExtraParametersActivity extends Activity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
         //disactivate gestureControl
@@ -224,8 +219,9 @@ public class ExtraParametersActivity extends Activity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onPause();
     }
 
     //reactivate voiceControl and gestureControl when acitivity regains focus
@@ -243,7 +239,7 @@ public class ExtraParametersActivity extends Activity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
         //activate gestureControl
@@ -256,26 +252,24 @@ public class ExtraParametersActivity extends Activity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         //disactivate voice control
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
 
         //disactivate gestureControl
@@ -289,8 +283,9 @@ public class ExtraParametersActivity extends Activity
         }
         catch(Exception e)
         {
-            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+            Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
 

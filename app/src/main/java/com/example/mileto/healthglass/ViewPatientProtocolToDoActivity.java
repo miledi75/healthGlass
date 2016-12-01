@@ -151,7 +151,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             //GestureSensor.On();
         }
 
@@ -250,9 +250,9 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             //create a patientprotocolItem object to get the selected patientProtocolItem
             PatientProtocolItem pi = (PatientProtocolItem) protocolItemsListview.getSelectedItem();
             //send the protocolItemId to the youtube intent to retrieve and play the video
-
+            Toast.makeText(this,Integer.toString(pi.getProtocolItemId()),Toast.LENGTH_SHORT).show();
             Intent youtubePlayerIntent = new Intent(getApplicationContext(),HelpVideoActivity.class);
-            youtubePlayerIntent.putExtra("protocolItemId",pi.getProtocolItemId());
+            youtubePlayerIntent.putExtra("protocolItemId",Integer.toString(pi.getProtocolItemId()));
             startActivity(youtubePlayerIntent);
         }
         else
@@ -332,7 +332,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
             //check if we are at the beginning of the list => go to the commentButton
             if(protocolItemsListview.getSelectedItemPosition() == 0)
             {
-                pictureButton.requestFocus();
+                audioRecordButton.requestFocus();
             }
             else // go to the previous protocolitem
             {
@@ -343,6 +343,8 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         else if(pictureButton.hasFocus())
         {
             protocolItemsListview.requestFocus();
+            //got to the last item
+            protocolItemsListview.setSelection(protocolItemsListview.getCount()-1);
         }
         else //comment button has focus: go to the imagesButton
         {
@@ -353,12 +355,12 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
             if(mVc != null)
             {
+                Toast.makeText(this,"Pausing voicecontrol",Toast.LENGTH_SHORT).show();
                 mVc.off();
             }
         }
@@ -379,7 +381,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
     @Override
@@ -391,6 +393,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             if (mVc != null)
             {
+                Toast.makeText(this,"Resuming voicecontrol",Toast.LENGTH_SHORT).show();
                 mVc.on();
             }
         }
@@ -416,13 +419,12 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                Toast.makeText(this,"Destroying voicecontrol",Toast.LENGTH_SHORT).show();
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -443,6 +445,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     //inner class myvoicecontrol
@@ -490,7 +493,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
 
             if(this.command.equals("go back"))
             {
-                finish();
+                onBackPressed();
             }
 
             if(this.command.equals("cancel"))
@@ -536,6 +539,7 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         @Override
         protected void onBackSwipe(int i)
         {
+            Toast.makeText(getApplicationContext(),"OnBackSwipe",Toast.LENGTH_SHORT).show();
             moveUp();
         }
 
@@ -543,17 +547,20 @@ public class ViewPatientProtocolToDoActivity extends AppCompatActivity {
         protected void onForwardSwipe(int i)
         {
             moveDown();
+            Toast.makeText(getApplicationContext(),"OnForwardSwipe",Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected void onNear()
         {
+            Toast.makeText(getApplicationContext(),"OnNear",Toast.LENGTH_SHORT).show();
             handleSelection();
         }
 
         @Override
         protected void onFar()
         {
+            Toast.makeText(getApplicationContext(),"OnFar",Toast.LENGTH_SHORT).show();
             finish();
         }
 

@@ -74,7 +74,7 @@ public class HelpVideoActivity extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             //GestureSensor.On();
         }
 
@@ -96,7 +96,7 @@ public class HelpVideoActivity extends AppCompatActivity
                 srcPath = "http://chamilo.arteveldehs.be/index.php?go=document_downloader&object=1420737&security_code=970be7c8cca1fd0a3908444fd9758b24aaa1782a&application=repository&display=1";
                 break;
         }
-        srcPath = "http://chamilo.arteveldehs.be/index.php?go=document_downloader&object=1411819&security_code=c95f82d406888a297500036c22168c6419d28300&application=repository&display=1";
+        //srcPath = "http://chamilo.arteveldehs.be/index.php?go=document_downloader&object=1411819&security_code=c95f82d406888a297500036c22168c6419d28300&application=repository&display=1";
         myVideoView = (VideoView)findViewById(R.id.myvideoview);
         myVideoView.setVideoURI(Uri.parse(srcPath));
 
@@ -110,7 +110,6 @@ public class HelpVideoActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
@@ -136,7 +135,7 @@ public class HelpVideoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
     @Override
@@ -173,13 +172,11 @@ public class HelpVideoActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+               mVc.destroy();
             }
         }
         catch(Exception e)
@@ -200,6 +197,7 @@ public class HelpVideoActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
 
@@ -222,7 +220,8 @@ public class HelpVideoActivity extends AppCompatActivity
             if(this.command.equals("go back"))
             {
                 //Go back to PatientInfoActivity
-                finish();
+                //finish();
+                onBackPressed();
             }
 
             if(this.command.equals("pause"))

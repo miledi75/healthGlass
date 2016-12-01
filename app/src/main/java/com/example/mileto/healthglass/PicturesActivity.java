@@ -93,7 +93,7 @@ public class PicturesActivity extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             //GestureSensor.On();
         }
 
@@ -162,7 +162,7 @@ public class PicturesActivity extends AppCompatActivity
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null)
         {
-            File pictureFile = null;
+            File pictureFile;
 
             pictureFile = getFileForPicture();
 
@@ -315,10 +315,11 @@ public class PicturesActivity extends AppCompatActivity
         {
             //get the position of the selected item
             int position = imageGridView.getSelectedItemPosition();
+            Toast.makeText(getApplicationContext(),Integer.toString(position),Toast.LENGTH_SHORT).show();
             //if first item is selected, move to the button
             if(position == 0)
             {
-                addImagesButton.hasFocus();
+                addImagesButton.requestFocus();
             }
             else
             {
@@ -413,7 +414,6 @@ public class PicturesActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
@@ -439,7 +439,7 @@ public class PicturesActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
 
@@ -447,13 +447,11 @@ public class PicturesActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -474,6 +472,7 @@ public class PicturesActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
     //INNER CLASSESS

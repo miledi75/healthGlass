@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,7 +49,7 @@ public class CommentsActivity extends AppCompatActivity
         //activate voiceControl
         try
         {
-            mVc = new MyVoiceControl(this);
+            mVc = new MyVoiceControl(getApplicationContext());
             if(mVc != null)
             {
                 mVc.on();
@@ -62,7 +63,7 @@ public class CommentsActivity extends AppCompatActivity
         //activate gestureSensor
         try
         {
-            mGc = new MyGestureControl(this);
+            mGc = new MyGestureControl(getApplicationContext());
             if(mGc != null)
             {
                 mGc.register();
@@ -104,7 +105,7 @@ public class CommentsActivity extends AppCompatActivity
         }
 
         //get the recordingpath for the comments
-        recordingPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES)+ DIRECTORY_NAME+"/"+patientID+"/"+this.protocolID;
+        recordingPath = getExternalFilesDir(Environment.DIRECTORY_MUSIC)+ DIRECTORY_NAME+"/"+patientID+"/"+this.protocolID;
         loadCommentsInListview();
         //OnclickListenrers for the Buttons
         addCommentButton.setOnClickListener(new View.OnClickListener()
@@ -151,6 +152,7 @@ public class CommentsActivity extends AppCompatActivity
         {
             for (int i = 0; i < files.length; ++i)
             {
+                Log.d("RECORDINGS:",files[i].getPath());
                 recordings.add(files[i].getName());
             }
         }
@@ -288,7 +290,6 @@ public class CommentsActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         try
         {
             if(mVc != null)
@@ -313,19 +314,18 @@ public class CommentsActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onPause();
     }
 
 
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -346,6 +346,7 @@ public class CommentsActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
 
@@ -384,6 +385,10 @@ public class CommentsActivity extends AppCompatActivity
             if(this.command.equals("go up"))
             {
                 moveUp();
+            }
+            if(this.command.equals("go back"))
+            {
+                finish();
             }
 
         }

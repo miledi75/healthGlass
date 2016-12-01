@@ -22,16 +22,15 @@ import java.util.ArrayList;
 public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
 {
     private Button              viewPicturesButton;
-    private Button              viewRecordingsButton;
+    private Button              viewCommentsButton;
     private ListView            protocolItemsListview;
     private String              patientIdFromBarcode;
     private String              protocolId;
-    private int                 numberOfProtocolItems;
     private AlertDialog.Builder goHomeDilaogBuilder;
     private AlertDialog         goHomeDialog;
 
-    private VoiceControl        mVc;
-    private GestureSensor       mGc;
+    private MyVoiceControl      mVc;
+    private MyGestureControl    mGc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,7 +45,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
 
         //initialize UI elements
         viewPicturesButton           = (Button) findViewById(R.id.buttonViewPictures);
-        viewRecordingsButton      = (Button) findViewById(R.id.buttonViewRecordings);
+        viewCommentsButton = (Button) findViewById(R.id.buttonViewRecordings);
         protocolItemsListview   = (ListView) findViewById(R.id.listViewProtocolItemsPerformed);
 
         //add the action listeners for the buttons
@@ -61,7 +60,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         });
 
 
-        viewRecordingsButton.setOnClickListener(new View.OnClickListener() {
+        viewCommentsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
@@ -137,7 +136,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"Please turn on the gestureSensor",Toast.LENGTH_SHORT).show();
             //GestureSensor.On();
         }
     }
@@ -176,7 +175,8 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         if(protocolItemsListview.hasFocus())
         {
             //check if we are at the end of the list => go to the picturebutton
-            if(protocolItemsListview.getSelectedItemPosition() == numberOfProtocolItems-1)
+            //Toast.makeText(getApplicationContext(),Integer.toString(numberOfProtocolItems),Toast.LENGTH_LONG).show();
+            if(protocolItemsListview.getSelectedItemPosition() == protocolItemsListview.getCount()-1)
             {
                 viewPicturesButton.requestFocus();
             }
@@ -188,11 +188,12 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         //check if the imagesbutton is selected => go to the commentbutton
         else if(viewPicturesButton.hasFocus())
         {
-            viewRecordingsButton.requestFocus();
+            viewCommentsButton.requestFocus();
         }
-        else //comment button has focus: go to the listview
+        else //comment button has focus: go to the listviews first item
         {
             protocolItemsListview.requestFocus();
+            protocolItemsListview.setSelection(0);
         }
     }
 
@@ -204,17 +205,18 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             //check if we are at the beginning of the list => go to the commentButton
             if(protocolItemsListview.getSelectedItemPosition() == 0)
             {
-                viewPicturesButton.requestFocus();
+                viewCommentsButton.requestFocus();
             }
             else // go to the previous protocolitem
             {
                 protocolItemsListview.setSelection(protocolItemsListview.getSelectedItemPosition()-1);
             }
         }
-        //check if the imagesbutton is selected => go to the listview
+        //check if the imagesbutton is selected => go to the listviews last item
         else if(viewPicturesButton.hasFocus())
         {
             protocolItemsListview.requestFocus();
+            protocolItemsListview.setSelection(protocolItemsListview.getCount()-1);
         }
         else //comment button has focus: go to the imagesButton
         {
@@ -333,7 +335,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     private void handleSelection()
     {
         //check if buttons are selected/have focus
-        if(viewRecordingsButton.hasFocus())
+        if(viewCommentsButton.hasFocus())
         {
             activateRecorderIntent();
         }
@@ -364,7 +366,6 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     @Override
     public void onPause()
     {
-        super.onPause();
         //deactivate voice
         try
         {
@@ -390,7 +391,7 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
-
+        super.onPause();
     }
 
     @Override
@@ -427,13 +428,11 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
     @Override
     public void onDestroy()
     {
-        super.onDestroy();
         try
         {
             if(mVc != null)
             {
-                mVc.off();
-                mVc = null;
+                mVc.destroy();
             }
         }
         catch(Exception e)
@@ -449,12 +448,12 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
                 mGc.unregister();
                 mGc = null;
             }
-            super.onPause();
         }
         catch(Exception e)
         {
             Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT).show();
         }
+        super.onDestroy();
     }
 
 
@@ -501,9 +500,5 @@ public class ViewPatientProtocolPerformedActivity extends AppCompatActivity
             return super.toString();
         }
     }
-
-
     //end inner class myGestureControl
-
-
 }
