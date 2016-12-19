@@ -312,7 +312,6 @@ public class ExtraParametersActivity extends Activity
                 //Go back to PatientInfoActivity
                 finish();
             }
-
         }
 
         @Override
